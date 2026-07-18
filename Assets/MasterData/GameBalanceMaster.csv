@@ -1,0 +1,15 @@
+Field,Value
+MaxOfflineHours,8
+MaxPetLevel,100
+MaxFood,100
+InitialSeedCount,1
+DefaultResearchSlots,1
+HungerDecayPerHour,5
+HungerLowThreshold,40
+HungerLowMultiplier,0.8
+HungerStarvingMultiplier,0.5
+BaseExp,20
+LengthBonusMultiplier2,1.0
+LengthBonusMultiplier3,1.1
+LengthBonusMultiplier4,1.2
+LengthBonusMultiplier5Plus,1.3

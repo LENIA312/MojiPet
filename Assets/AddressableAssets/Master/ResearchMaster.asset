@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85b8d41812f54fb429b5d8f1a59ac612, type: 3}
+  m_Name: ResearchMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.ResearchMasterSO
+  _entries:
+  - Difficulty: 1
+    RequiredSeconds: 30
+  - Difficulty: 2
+    RequiredSeconds: 120
+  - Difficulty: 3
+    RequiredSeconds: 270
+  - Difficulty: 4
+    RequiredSeconds: 480
+  - Difficulty: 5
+    RequiredSeconds: 750
+  - Difficulty: 6
+    RequiredSeconds: 1080
+  - Difficulty: 7
+    RequiredSeconds: 1470
+  - Difficulty: 8
+    RequiredSeconds: 1920
+  - Difficulty: 9
+    RequiredSeconds: 2430
+  - Difficulty: 10
+    RequiredSeconds: 3000
+  - Difficulty: 11
+    RequiredSeconds: 3630
+  - Difficulty: 12
+    RequiredSeconds: 4320
+  - Difficulty: 13
+    RequiredSeconds: 5070
+  - Difficulty: 14
+    RequiredSeconds: 5880
+  - Difficulty: 15
+    RequiredSeconds: 6750
+  - Difficulty: 16
+    RequiredSeconds: 7680
+  - Difficulty: 17
+    RequiredSeconds: 8670
+  - Difficulty: 18
+    RequiredSeconds: 9720
+  - Difficulty: 19
+    RequiredSeconds: 10830
+  - Difficulty: 20
+    RequiredSeconds: 12000
+  - Difficulty: 21
+    RequiredSeconds: 13230
+  - Difficulty: 22
+    RequiredSeconds: 14520
+  - Difficulty: 23
+    RequiredSeconds: 15870
+  - Difficulty: 24
+    RequiredSeconds: 17280
+  - Difficulty: 25
+    RequiredSeconds: 18750
+  - Difficulty: 26
+    RequiredSeconds: 20280
+  - Difficulty: 27
+    RequiredSeconds: 21870
+  - Difficulty: 28
+    RequiredSeconds: 23520
+  - Difficulty: 29
+    RequiredSeconds: 25230
+  - Difficulty: 30
+    RequiredSeconds: 27000

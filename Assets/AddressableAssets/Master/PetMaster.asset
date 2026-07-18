@@ -1,0 +1,291 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 595535000da5fb54dbeb9af11972d0c9, type: 3}
+  m_Name: PetMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.PetMasterSO
+  _entries:
+  - CharacterId: 1
+    Character: "\u3042"
+    DisplayName: "\u3042"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 2
+    Character: "\u3044"
+    DisplayName: "\u3044"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 3
+    Character: "\u3046"
+    DisplayName: "\u3046"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 4
+    Character: "\u3048"
+    DisplayName: "\u3048"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 5
+    Character: "\u304A"
+    DisplayName: "\u304A"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 6
+    Character: "\u304B"
+    DisplayName: "\u304B"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 7
+    Character: "\u304D"
+    DisplayName: "\u304D"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 8
+    Character: "\u304F"
+    DisplayName: "\u304F"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 9
+    Character: "\u3051"
+    DisplayName: "\u3051"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 10
+    Character: "\u3053"
+    DisplayName: "\u3053"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 11
+    Character: "\u3055"
+    DisplayName: "\u3055"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 12
+    Character: "\u3057"
+    DisplayName: "\u3057"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 13
+    Character: "\u3059"
+    DisplayName: "\u3059"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 14
+    Character: "\u305B"
+    DisplayName: "\u305B"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 15
+    Character: "\u305D"
+    DisplayName: "\u305D"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 16
+    Character: "\u305F"
+    DisplayName: "\u305F"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 17
+    Character: "\u3061"
+    DisplayName: "\u3061"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 18
+    Character: "\u3064"
+    DisplayName: "\u3064"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 19
+    Character: "\u3066"
+    DisplayName: "\u3066"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 20
+    Character: "\u3068"
+    DisplayName: "\u3068"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 21
+    Character: "\u306A"
+    DisplayName: "\u306A"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 22
+    Character: "\u306B"
+    DisplayName: "\u306B"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 23
+    Character: "\u306C"
+    DisplayName: "\u306C"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 24
+    Character: "\u306D"
+    DisplayName: "\u306D"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 25
+    Character: "\u306E"
+    DisplayName: "\u306E"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 26
+    Character: "\u306F"
+    DisplayName: "\u306F"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 27
+    Character: "\u3072"
+    DisplayName: "\u3072"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 28
+    Character: "\u3075"
+    DisplayName: "\u3075"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 29
+    Character: "\u3078"
+    DisplayName: "\u3078"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 30
+    Character: "\u307B"
+    DisplayName: "\u307B"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 31
+    Character: "\u307E"
+    DisplayName: "\u307E"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 32
+    Character: "\u307F"
+    DisplayName: "\u307F"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 33
+    Character: "\u3080"
+    DisplayName: "\u3080"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 34
+    Character: "\u3081"
+    DisplayName: "\u3081"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 35
+    Character: "\u3082"
+    DisplayName: "\u3082"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 36
+    Character: "\u3084"
+    DisplayName: "\u3084"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 37
+    Character: "\u3086"
+    DisplayName: "\u3086"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 38
+    Character: "\u3088"
+    DisplayName: "\u3088"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 39
+    Character: "\u3089"
+    DisplayName: "\u3089"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 40
+    Character: "\u308A"
+    DisplayName: "\u308A"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 41
+    Character: "\u308B"
+    DisplayName: "\u308B"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 42
+    Character: "\u308C"
+    DisplayName: "\u308C"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 43
+    Character: "\u308D"
+    DisplayName: "\u308D"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 44
+    Character: "\u308F"
+    DisplayName: "\u308F"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 45
+    Character: "\u3092"
+    DisplayName: "\u3092"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1
+  - CharacterId: 46
+    Character: "\u3093"
+    DisplayName: "\u3093"
+    InitialLevel: 1
+    BaseProduction: 1
+    BaseResearchSpeed: 1

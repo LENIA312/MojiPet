@@ -1,0 +1,453 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c235d3f5501964fa59b54b6f8af519, type: 3}
+  m_Name: WordMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.WordMasterSO
+  _entries:
+  - WordId: 1
+    Word: "\u3042\u3081"
+    Reading: "\u3042\u3081"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3042"
+    - "\u3081"
+  - WordId: 2
+    Word: "\u3044\u306C"
+    Reading: "\u3044\u306C"
+    Length: 2
+    Difficulty: 1
+    Category: 2
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3044"
+    - "\u306C"
+  - WordId: 3
+    Word: "\u3046\u3057"
+    Reading: "\u3046\u3057"
+    Length: 2
+    Difficulty: 1
+    Category: 2
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3046"
+    - "\u3057"
+  - WordId: 4
+    Word: "\u3048\u307B\u3093"
+    Reading: "\u3048\u307B\u3093"
+    Length: 3
+    Difficulty: 2
+    Category: 5
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u3048"
+    - "\u307B"
+    - "\u3093"
+  - WordId: 5
+    Word: "\u304A\u304B\u3057"
+    Reading: "\u304A\u304B\u3057"
+    Length: 3
+    Difficulty: 2
+    Category: 4
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u304A"
+    - "\u304B"
+    - "\u3057"
+  - WordId: 6
+    Word: "\u304B\u3055"
+    Reading: "\u304B\u3055"
+    Length: 2
+    Difficulty: 1
+    Category: 5
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u304B"
+    - "\u3055"
+  - WordId: 7
+    Word: "\u304D\u3063\u3066"
+    Reading: "\u304D\u3063\u3066"
+    Length: 3
+    Difficulty: 2
+    Category: 5
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u304D"
+    - "\u3063"
+    - "\u3066"
+  - WordId: 8
+    Word: "\u304F\u3064"
+    Reading: "\u304F\u3064"
+    Length: 2
+    Difficulty: 1
+    Category: 5
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u304F"
+    - "\u3064"
+  - WordId: 9
+    Word: "\u3051\u3080\u308A"
+    Reading: "\u3051\u3080\u308A"
+    Length: 3
+    Difficulty: 2
+    Category: 0
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u3051"
+    - "\u3080"
+    - "\u308A"
+  - WordId: 10
+    Word: "\u3053\u304A\u308A"
+    Reading: "\u3053\u304A\u308A"
+    Length: 3
+    Difficulty: 2
+    Category: 0
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u3053"
+    - "\u304A"
+    - "\u308A"
+  - WordId: 11
+    Word: "\u3055\u304F\u3089"
+    Reading: "\u3055\u304F\u3089"
+    Length: 3
+    Difficulty: 2
+    Category: 1
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u3055"
+    - "\u304F"
+    - "\u3089"
+  - WordId: 12
+    Word: "\u3057\u308D"
+    Reading: "\u3057\u308D"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3057"
+    - "\u308D"
+  - WordId: 13
+    Word: "\u3059\u3044\u304B"
+    Reading: "\u3059\u3044\u304B"
+    Length: 3
+    Difficulty: 2
+    Category: 4
+    RequiredLevel: 3
+    ResearchTimeSeconds: 120
+    Characters:
+    - "\u3059"
+    - "\u3044"
+    - "\u304B"
+  - WordId: 14
+    Word: "\u305B\u3093\u3077\u3046\u304D"
+    Reading: "\u305B\u3093\u3077\u3046\u304D"
+    Length: 5
+    Difficulty: 4
+    Category: 5
+    RequiredLevel: 8
+    ResearchTimeSeconds: 480
+    Characters:
+    - "\u305B"
+    - "\u3093"
+    - "\u3077"
+    - "\u3046"
+    - "\u304D"
+  - WordId: 15
+    Word: "\u305D\u3089"
+    Reading: "\u305D\u3089"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u305D"
+    - "\u3089"
+  - WordId: 16
+    Word: "\u3042\u308A\u304C\u3068\u3046"
+    Reading: "\u3042\u308A\u304C\u3068\u3046"
+    Length: 5
+    Difficulty: 4
+    Category: 0
+    RequiredLevel: 8
+    ResearchTimeSeconds: 480
+    Characters:
+    - "\u3042"
+    - "\u308A"
+    - "\u304C"
+    - "\u3068"
+    - "\u3046"
+  - WordId: 17
+    Word: "\u3042\u3058\u3055\u3044"
+    Reading: "\u3042\u3058\u3055\u3044"
+    Length: 4
+    Difficulty: 3
+    Category: 1
+    RequiredLevel: 5
+    ResearchTimeSeconds: 270
+    Characters:
+    - "\u3042"
+    - "\u3058"
+    - "\u3055"
+    - "\u3044"
+  - WordId: 18
+    Word: "\u3042\u307E\u306E\u306F\u3057\u3060\u3066"
+    Reading: "\u3042\u307E\u306E\u306F\u3057\u3060\u3066"
+    Length: 7
+    Difficulty: 6
+    Category: 3
+    RequiredLevel: 15
+    ResearchTimeSeconds: 1080
+    Characters:
+    - "\u3042"
+    - "\u307E"
+    - "\u306E"
+    - "\u306F"
+    - "\u3057"
+    - "\u3060"
+    - "\u3066"
+  - WordId: 19
+    Word: "\u304D\u304F"
+    Reading: "\u304D\u304F"
+    Length: 2
+    Difficulty: 1
+    Category: 1
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u304D"
+    - "\u304F"
+  - WordId: 20
+    Word: "\u305B\u307F"
+    Reading: "\u305B\u307F"
+    Length: 2
+    Difficulty: 1
+    Category: 2
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u305B"
+    - "\u307F"
+  - WordId: 21
+    Word: "\u305F\u3053"
+    Reading: "\u305F\u3053"
+    Length: 2
+    Difficulty: 1
+    Category: 5
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u305F"
+    - "\u3053"
+  - WordId: 22
+    Word: "\u3046\u3061"
+    Reading: "\u3046\u3061"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3046"
+    - "\u3061"
+  - WordId: 23
+    Word: "\u3066\u3089"
+    Reading: "\u3066\u3089"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3066"
+    - "\u3089"
+  - WordId: 24
+    Word: "\u306A\u3064"
+    Reading: "\u306A\u3064"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306A"
+    - "\u3064"
+  - WordId: 25
+    Word: "\u306B\u308F"
+    Reading: "\u306B\u308F"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306B"
+    - "\u308F"
+  - WordId: 26
+    Word: "\u306D\u3053"
+    Reading: "\u306D\u3053"
+    Length: 2
+    Difficulty: 1
+    Category: 2
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306D"
+    - "\u3053"
+  - WordId: 27
+    Word: "\u306E\u308A"
+    Reading: "\u306E\u308A"
+    Length: 2
+    Difficulty: 1
+    Category: 4
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306E"
+    - "\u308A"
+  - WordId: 28
+    Word: "\u306F\u306A"
+    Reading: "\u306F\u306A"
+    Length: 2
+    Difficulty: 1
+    Category: 1
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306F"
+    - "\u306A"
+  - WordId: 29
+    Word: "\u3072\u308B"
+    Reading: "\u3072\u308B"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3072"
+    - "\u308B"
+  - WordId: 30
+    Word: "\u3075\u3086"
+    Reading: "\u3075\u3086"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3075"
+    - "\u3086"
+  - WordId: 31
+    Word: "\u3078\u3084"
+    Reading: "\u3078\u3084"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3078"
+    - "\u3084"
+  - WordId: 32
+    Word: "\u307B\u3057"
+    Reading: "\u307B\u3057"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u307B"
+    - "\u3057"
+  - WordId: 33
+    Word: "\u307E\u3081"
+    Reading: "\u307E\u3081"
+    Length: 2
+    Difficulty: 1
+    Category: 4
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u307E"
+    - "\u3081"
+  - WordId: 34
+    Word: "\u3082\u308A"
+    Reading: "\u3082\u308A"
+    Length: 2
+    Difficulty: 1
+    Category: 3
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3082"
+    - "\u308A"
+  - WordId: 35
+    Word: "\u3088\u308B"
+    Reading: "\u3088\u308B"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u3088"
+    - "\u308B"
+  - WordId: 36
+    Word: "\u306F\u308C"
+    Reading: "\u306F\u308C"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u306F"
+    - "\u308C"
+  - WordId: 37
+    Word: "\u307B\u3093"
+    Reading: "\u307B\u3093"
+    Length: 2
+    Difficulty: 1
+    Category: 5
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u307B"
+    - "\u3093"
+  - WordId: 38
+    Word: "\u304A\u3068"
+    Reading: "\u304A\u3068"
+    Length: 2
+    Difficulty: 1
+    Category: 0
+    RequiredLevel: 1
+    ResearchTimeSeconds: 30
+    Characters:
+    - "\u304A"
+    - "\u3068"

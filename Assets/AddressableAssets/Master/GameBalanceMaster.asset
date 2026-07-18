@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 137916532f5fca14095bef42a7836ee5, type: 3}
+  m_Name: GameBalanceMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.GameBalanceMasterSO
+  _maxOfflineHours: 8
+  _maxPetLevel: 100
+  _maxFood: 100
+  _initialSeedCount: 1
+  _defaultResearchSlots: 1
+  _hungerDecayPerHour: 5
+  _hungerLowThreshold: 40
+  _hungerLowMultiplier: 0.8
+  _hungerStarvingMultiplier: 0.5
+  _baseExp: 20
+  _lengthBonusMultiplier2: 1
+  _lengthBonusMultiplier3: 1.1
+  _lengthBonusMultiplier4: 1.2
+  _lengthBonusMultiplier5Plus: 1.3

@@ -1,0 +1,415 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7f396743b420145b1a7a34b0789e21, type: 3}
+  m_Name: ExpMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.ExpMasterSO
+  _entries:
+  - Level: 1
+    RequiredExp: 0
+    ProductionMultiplier: 1
+    ResearchSpeedMultiplier: 1
+  - Level: 2
+    RequiredExp: 20
+    ProductionMultiplier: 1.12
+    ResearchSpeedMultiplier: 1.03
+  - Level: 3
+    RequiredExp: 60
+    ProductionMultiplier: 1.24
+    ResearchSpeedMultiplier: 1.06
+  - Level: 4
+    RequiredExp: 120
+    ProductionMultiplier: 1.37
+    ResearchSpeedMultiplier: 1.09
+  - Level: 5
+    RequiredExp: 200
+    ProductionMultiplier: 1.49
+    ResearchSpeedMultiplier: 1.12
+  - Level: 6
+    RequiredExp: 300
+    ProductionMultiplier: 1.61
+    ResearchSpeedMultiplier: 1.15
+  - Level: 7
+    RequiredExp: 420
+    ProductionMultiplier: 1.73
+    ResearchSpeedMultiplier: 1.18
+  - Level: 8
+    RequiredExp: 560
+    ProductionMultiplier: 1.85
+    ResearchSpeedMultiplier: 1.21
+  - Level: 9
+    RequiredExp: 720
+    ProductionMultiplier: 1.98
+    ResearchSpeedMultiplier: 1.24
+  - Level: 10
+    RequiredExp: 900
+    ProductionMultiplier: 2.1
+    ResearchSpeedMultiplier: 1.27
+  - Level: 11
+    RequiredExp: 1100
+    ProductionMultiplier: 2.22
+    ResearchSpeedMultiplier: 1.3
+  - Level: 12
+    RequiredExp: 1320
+    ProductionMultiplier: 2.34
+    ResearchSpeedMultiplier: 1.33
+  - Level: 13
+    RequiredExp: 1560
+    ProductionMultiplier: 2.46
+    ResearchSpeedMultiplier: 1.36
+  - Level: 14
+    RequiredExp: 1820
+    ProductionMultiplier: 2.59
+    ResearchSpeedMultiplier: 1.39
+  - Level: 15
+    RequiredExp: 2100
+    ProductionMultiplier: 2.71
+    ResearchSpeedMultiplier: 1.42
+  - Level: 16
+    RequiredExp: 2400
+    ProductionMultiplier: 2.83
+    ResearchSpeedMultiplier: 1.45
+  - Level: 17
+    RequiredExp: 2720
+    ProductionMultiplier: 2.95
+    ResearchSpeedMultiplier: 1.48
+  - Level: 18
+    RequiredExp: 3060
+    ProductionMultiplier: 3.07
+    ResearchSpeedMultiplier: 1.51
+  - Level: 19
+    RequiredExp: 3420
+    ProductionMultiplier: 3.2
+    ResearchSpeedMultiplier: 1.54
+  - Level: 20
+    RequiredExp: 3800
+    ProductionMultiplier: 3.32
+    ResearchSpeedMultiplier: 1.57
+  - Level: 21
+    RequiredExp: 4200
+    ProductionMultiplier: 3.44
+    ResearchSpeedMultiplier: 1.6
+  - Level: 22
+    RequiredExp: 4620
+    ProductionMultiplier: 3.56
+    ResearchSpeedMultiplier: 1.63
+  - Level: 23
+    RequiredExp: 5060
+    ProductionMultiplier: 3.68
+    ResearchSpeedMultiplier: 1.66
+  - Level: 24
+    RequiredExp: 5520
+    ProductionMultiplier: 3.81
+    ResearchSpeedMultiplier: 1.69
+  - Level: 25
+    RequiredExp: 6000
+    ProductionMultiplier: 3.93
+    ResearchSpeedMultiplier: 1.72
+  - Level: 26
+    RequiredExp: 6500
+    ProductionMultiplier: 4.05
+    ResearchSpeedMultiplier: 1.75
+  - Level: 27
+    RequiredExp: 7020
+    ProductionMultiplier: 4.17
+    ResearchSpeedMultiplier: 1.78
+  - Level: 28
+    RequiredExp: 7560
+    ProductionMultiplier: 4.29
+    ResearchSpeedMultiplier: 1.81
+  - Level: 29
+    RequiredExp: 8120
+    ProductionMultiplier: 4.42
+    ResearchSpeedMultiplier: 1.84
+  - Level: 30
+    RequiredExp: 8700
+    ProductionMultiplier: 4.54
+    ResearchSpeedMultiplier: 1.87
+  - Level: 31
+    RequiredExp: 9300
+    ProductionMultiplier: 4.66
+    ResearchSpeedMultiplier: 1.9
+  - Level: 32
+    RequiredExp: 9920
+    ProductionMultiplier: 4.78
+    ResearchSpeedMultiplier: 1.93
+  - Level: 33
+    RequiredExp: 10560
+    ProductionMultiplier: 4.9
+    ResearchSpeedMultiplier: 1.96
+  - Level: 34
+    RequiredExp: 11220
+    ProductionMultiplier: 5.03
+    ResearchSpeedMultiplier: 1.99
+  - Level: 35
+    RequiredExp: 11900
+    ProductionMultiplier: 5.15
+    ResearchSpeedMultiplier: 2.02
+  - Level: 36
+    RequiredExp: 12600
+    ProductionMultiplier: 5.27
+    ResearchSpeedMultiplier: 2.05
+  - Level: 37
+    RequiredExp: 13320
+    ProductionMultiplier: 5.39
+    ResearchSpeedMultiplier: 2.08
+  - Level: 38
+    RequiredExp: 14060
+    ProductionMultiplier: 5.51
+    ResearchSpeedMultiplier: 2.11
+  - Level: 39
+    RequiredExp: 14820
+    ProductionMultiplier: 5.64
+    ResearchSpeedMultiplier: 2.14
+  - Level: 40
+    RequiredExp: 15600
+    ProductionMultiplier: 5.76
+    ResearchSpeedMultiplier: 2.17
+  - Level: 41
+    RequiredExp: 16400
+    ProductionMultiplier: 5.88
+    ResearchSpeedMultiplier: 2.2
+  - Level: 42
+    RequiredExp: 17220
+    ProductionMultiplier: 6
+    ResearchSpeedMultiplier: 2.23
+  - Level: 43
+    RequiredExp: 18060
+    ProductionMultiplier: 6.12
+    ResearchSpeedMultiplier: 2.26
+  - Level: 44
+    RequiredExp: 18920
+    ProductionMultiplier: 6.25
+    ResearchSpeedMultiplier: 2.29
+  - Level: 45
+    RequiredExp: 19800
+    ProductionMultiplier: 6.37
+    ResearchSpeedMultiplier: 2.32
+  - Level: 46
+    RequiredExp: 20700
+    ProductionMultiplier: 6.49
+    ResearchSpeedMultiplier: 2.35
+  - Level: 47
+    RequiredExp: 21620
+    ProductionMultiplier: 6.61
+    ResearchSpeedMultiplier: 2.38
+  - Level: 48
+    RequiredExp: 22560
+    ProductionMultiplier: 6.73
+    ResearchSpeedMultiplier: 2.41
+  - Level: 49
+    RequiredExp: 23520
+    ProductionMultiplier: 6.86
+    ResearchSpeedMultiplier: 2.44
+  - Level: 50
+    RequiredExp: 24500
+    ProductionMultiplier: 6.98
+    ResearchSpeedMultiplier: 2.47
+  - Level: 51
+    RequiredExp: 25500
+    ProductionMultiplier: 7.1
+    ResearchSpeedMultiplier: 2.5
+  - Level: 52
+    RequiredExp: 26520
+    ProductionMultiplier: 7.22
+    ResearchSpeedMultiplier: 2.53
+  - Level: 53
+    RequiredExp: 27560
+    ProductionMultiplier: 7.34
+    ResearchSpeedMultiplier: 2.56
+  - Level: 54
+    RequiredExp: 28620
+    ProductionMultiplier: 7.47
+    ResearchSpeedMultiplier: 2.59
+  - Level: 55
+    RequiredExp: 29700
+    ProductionMultiplier: 7.59
+    ResearchSpeedMultiplier: 2.62
+  - Level: 56
+    RequiredExp: 30800
+    ProductionMultiplier: 7.71
+    ResearchSpeedMultiplier: 2.65
+  - Level: 57
+    RequiredExp: 31920
+    ProductionMultiplier: 7.83
+    ResearchSpeedMultiplier: 2.68
+  - Level: 58
+    RequiredExp: 33060
+    ProductionMultiplier: 7.95
+    ResearchSpeedMultiplier: 2.71
+  - Level: 59
+    RequiredExp: 34220
+    ProductionMultiplier: 8.08
+    ResearchSpeedMultiplier: 2.74
+  - Level: 60
+    RequiredExp: 35400
+    ProductionMultiplier: 8.2
+    ResearchSpeedMultiplier: 2.77
+  - Level: 61
+    RequiredExp: 36600
+    ProductionMultiplier: 8.32
+    ResearchSpeedMultiplier: 2.8
+  - Level: 62
+    RequiredExp: 37820
+    ProductionMultiplier: 8.44
+    ResearchSpeedMultiplier: 2.83
+  - Level: 63
+    RequiredExp: 39060
+    ProductionMultiplier: 8.56
+    ResearchSpeedMultiplier: 2.86
+  - Level: 64
+    RequiredExp: 40320
+    ProductionMultiplier: 8.69
+    ResearchSpeedMultiplier: 2.89
+  - Level: 65
+    RequiredExp: 41600
+    ProductionMultiplier: 8.81
+    ResearchSpeedMultiplier: 2.92
+  - Level: 66
+    RequiredExp: 42900
+    ProductionMultiplier: 8.93
+    ResearchSpeedMultiplier: 2.95
+  - Level: 67
+    RequiredExp: 44220
+    ProductionMultiplier: 9.05
+    ResearchSpeedMultiplier: 2.98
+  - Level: 68
+    RequiredExp: 45560
+    ProductionMultiplier: 9.17
+    ResearchSpeedMultiplier: 3.01
+  - Level: 69
+    RequiredExp: 46920
+    ProductionMultiplier: 9.3
+    ResearchSpeedMultiplier: 3.04
+  - Level: 70
+    RequiredExp: 48300
+    ProductionMultiplier: 9.42
+    ResearchSpeedMultiplier: 3.07
+  - Level: 71
+    RequiredExp: 49700
+    ProductionMultiplier: 9.54
+    ResearchSpeedMultiplier: 3.1
+  - Level: 72
+    RequiredExp: 51120
+    ProductionMultiplier: 9.66
+    ResearchSpeedMultiplier: 3.13
+  - Level: 73
+    RequiredExp: 52560
+    ProductionMultiplier: 9.78
+    ResearchSpeedMultiplier: 3.16
+  - Level: 74
+    RequiredExp: 54020
+    ProductionMultiplier: 9.91
+    ResearchSpeedMultiplier: 3.19
+  - Level: 75
+    RequiredExp: 55500
+    ProductionMultiplier: 10.03
+    ResearchSpeedMultiplier: 3.22
+  - Level: 76
+    RequiredExp: 57000
+    ProductionMultiplier: 10.15
+    ResearchSpeedMultiplier: 3.25
+  - Level: 77
+    RequiredExp: 58520
+    ProductionMultiplier: 10.27
+    ResearchSpeedMultiplier: 3.28
+  - Level: 78
+    RequiredExp: 60060
+    ProductionMultiplier: 10.39
+    ResearchSpeedMultiplier: 3.31
+  - Level: 79
+    RequiredExp: 61620
+    ProductionMultiplier: 10.52
+    ResearchSpeedMultiplier: 3.34
+  - Level: 80
+    RequiredExp: 63200
+    ProductionMultiplier: 10.64
+    ResearchSpeedMultiplier: 3.37
+  - Level: 81
+    RequiredExp: 64800
+    ProductionMultiplier: 10.76
+    ResearchSpeedMultiplier: 3.4
+  - Level: 82
+    RequiredExp: 66420
+    ProductionMultiplier: 10.88
+    ResearchSpeedMultiplier: 3.43
+  - Level: 83
+    RequiredExp: 68060
+    ProductionMultiplier: 11
+    ResearchSpeedMultiplier: 3.46
+  - Level: 84
+    RequiredExp: 69720
+    ProductionMultiplier: 11.13
+    ResearchSpeedMultiplier: 3.49
+  - Level: 85
+    RequiredExp: 71400
+    ProductionMultiplier: 11.25
+    ResearchSpeedMultiplier: 3.52
+  - Level: 86
+    RequiredExp: 73100
+    ProductionMultiplier: 11.37
+    ResearchSpeedMultiplier: 3.55
+  - Level: 87
+    RequiredExp: 74820
+    ProductionMultiplier: 11.49
+    ResearchSpeedMultiplier: 3.58
+  - Level: 88
+    RequiredExp: 76560
+    ProductionMultiplier: 11.61
+    ResearchSpeedMultiplier: 3.61
+  - Level: 89
+    RequiredExp: 78320
+    ProductionMultiplier: 11.74
+    ResearchSpeedMultiplier: 3.64
+  - Level: 90
+    RequiredExp: 80100
+    ProductionMultiplier: 11.86
+    ResearchSpeedMultiplier: 3.67
+  - Level: 91
+    RequiredExp: 81900
+    ProductionMultiplier: 11.98
+    ResearchSpeedMultiplier: 3.7
+  - Level: 92
+    RequiredExp: 83720
+    ProductionMultiplier: 12.1
+    ResearchSpeedMultiplier: 3.73
+  - Level: 93
+    RequiredExp: 85560
+    ProductionMultiplier: 12.22
+    ResearchSpeedMultiplier: 3.76
+  - Level: 94
+    RequiredExp: 87420
+    ProductionMultiplier: 12.35
+    ResearchSpeedMultiplier: 3.79
+  - Level: 95
+    RequiredExp: 89300
+    ProductionMultiplier: 12.47
+    ResearchSpeedMultiplier: 3.82
+  - Level: 96
+    RequiredExp: 91200
+    ProductionMultiplier: 12.59
+    ResearchSpeedMultiplier: 3.85
+  - Level: 97
+    RequiredExp: 93120
+    ProductionMultiplier: 12.71
+    ResearchSpeedMultiplier: 3.88
+  - Level: 98
+    RequiredExp: 95060
+    ProductionMultiplier: 12.83
+    ResearchSpeedMultiplier: 3.91
+  - Level: 99
+    RequiredExp: 97020
+    ProductionMultiplier: 12.96
+    ResearchSpeedMultiplier: 3.94
+  - Level: 100
+    RequiredExp: 99000
+    ProductionMultiplier: 13.08
+    ResearchSpeedMultiplier: 3.97

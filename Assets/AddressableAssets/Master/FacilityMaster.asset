@@ -1,0 +1,315 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 075378717a90bd745b11f576dac5eaa0, type: 3}
+  m_Name: FacilityMaster
+  m_EditorClassIdentifier: Mojipet.Runtime::Mojipet.Master.FacilityMasterSO
+  _entries:
+  - Id: 1
+    FacilityType: 0
+    Level: 1
+    UpgradeCost: 100
+    EffectValue: 1.02
+  - Id: 2
+    FacilityType: 0
+    Level: 2
+    UpgradeCost: 303
+    EffectValue: 1.04
+  - Id: 3
+    FacilityType: 0
+    Level: 3
+    UpgradeCost: 579
+    EffectValue: 1.06
+  - Id: 4
+    FacilityType: 0
+    Level: 4
+    UpgradeCost: 918
+    EffectValue: 1.08
+  - Id: 5
+    FacilityType: 0
+    Level: 5
+    UpgradeCost: 1313
+    EffectValue: 1.1
+  - Id: 6
+    FacilityType: 0
+    Level: 6
+    UpgradeCost: 1758
+    EffectValue: 1.12
+  - Id: 7
+    FacilityType: 0
+    Level: 7
+    UpgradeCost: 2249
+    EffectValue: 1.14
+  - Id: 8
+    FacilityType: 0
+    Level: 8
+    UpgradeCost: 2785
+    EffectValue: 1.16
+  - Id: 9
+    FacilityType: 0
+    Level: 9
+    UpgradeCost: 3363
+    EffectValue: 1.18
+  - Id: 10
+    FacilityType: 0
+    Level: 10
+    UpgradeCost: 3981
+    EffectValue: 1.2
+  - Id: 11
+    FacilityType: 0
+    Level: 11
+    UpgradeCost: 4636
+    EffectValue: 1.22
+  - Id: 12
+    FacilityType: 0
+    Level: 12
+    UpgradeCost: 5329
+    EffectValue: 1.24
+  - Id: 13
+    FacilityType: 0
+    Level: 13
+    UpgradeCost: 6057
+    EffectValue: 1.26
+  - Id: 14
+    FacilityType: 0
+    Level: 14
+    UpgradeCost: 6820
+    EffectValue: 1.28
+  - Id: 15
+    FacilityType: 0
+    Level: 15
+    UpgradeCost: 7616
+    EffectValue: 1.3
+  - Id: 16
+    FacilityType: 0
+    Level: 16
+    UpgradeCost: 8444
+    EffectValue: 1.32
+  - Id: 17
+    FacilityType: 0
+    Level: 17
+    UpgradeCost: 9305
+    EffectValue: 1.34
+  - Id: 18
+    FacilityType: 0
+    Level: 18
+    UpgradeCost: 10196
+    EffectValue: 1.36
+  - Id: 19
+    FacilityType: 0
+    Level: 19
+    UpgradeCost: 11117
+    EffectValue: 1.38
+  - Id: 20
+    FacilityType: 0
+    Level: 20
+    UpgradeCost: 12068
+    EffectValue: 1.4
+  - Id: 21
+    FacilityType: 1
+    Level: 1
+    UpgradeCost: 100
+    EffectValue: 1.02
+  - Id: 22
+    FacilityType: 1
+    Level: 2
+    UpgradeCost: 303
+    EffectValue: 1.04
+  - Id: 23
+    FacilityType: 1
+    Level: 3
+    UpgradeCost: 579
+    EffectValue: 1.06
+  - Id: 24
+    FacilityType: 1
+    Level: 4
+    UpgradeCost: 918
+    EffectValue: 1.08
+  - Id: 25
+    FacilityType: 1
+    Level: 5
+    UpgradeCost: 1313
+    EffectValue: 1.1
+  - Id: 26
+    FacilityType: 1
+    Level: 6
+    UpgradeCost: 1758
+    EffectValue: 1.12
+  - Id: 27
+    FacilityType: 1
+    Level: 7
+    UpgradeCost: 2249
+    EffectValue: 1.14
+  - Id: 28
+    FacilityType: 1
+    Level: 8
+    UpgradeCost: 2785
+    EffectValue: 1.16
+  - Id: 29
+    FacilityType: 1
+    Level: 9
+    UpgradeCost: 3363
+    EffectValue: 1.18
+  - Id: 30
+    FacilityType: 1
+    Level: 10
+    UpgradeCost: 3981
+    EffectValue: 1.2
+  - Id: 31
+    FacilityType: 1
+    Level: 11
+    UpgradeCost: 4636
+    EffectValue: 1.22
+  - Id: 32
+    FacilityType: 1
+    Level: 12
+    UpgradeCost: 5329
+    EffectValue: 1.24
+  - Id: 33
+    FacilityType: 1
+    Level: 13
+    UpgradeCost: 6057
+    EffectValue: 1.26
+  - Id: 34
+    FacilityType: 1
+    Level: 14
+    UpgradeCost: 6820
+    EffectValue: 1.28
+  - Id: 35
+    FacilityType: 1
+    Level: 15
+    UpgradeCost: 7616
+    EffectValue: 1.3
+  - Id: 36
+    FacilityType: 1
+    Level: 16
+    UpgradeCost: 8444
+    EffectValue: 1.32
+  - Id: 37
+    FacilityType: 1
+    Level: 17
+    UpgradeCost: 9305
+    EffectValue: 1.34
+  - Id: 38
+    FacilityType: 1
+    Level: 18
+    UpgradeCost: 10196
+    EffectValue: 1.36
+  - Id: 39
+    FacilityType: 1
+    Level: 19
+    UpgradeCost: 11117
+    EffectValue: 1.38
+  - Id: 40
+    FacilityType: 1
+    Level: 20
+    UpgradeCost: 12068
+    EffectValue: 1.4
+  - Id: 41
+    FacilityType: 2
+    Level: 1
+    UpgradeCost: 100
+    EffectValue: 1.02
+  - Id: 42
+    FacilityType: 2
+    Level: 2
+    UpgradeCost: 303
+    EffectValue: 1.04
+  - Id: 43
+    FacilityType: 2
+    Level: 3
+    UpgradeCost: 579
+    EffectValue: 1.06
+  - Id: 44
+    FacilityType: 2
+    Level: 4
+    UpgradeCost: 918
+    EffectValue: 1.08
+  - Id: 45
+    FacilityType: 2
+    Level: 5
+    UpgradeCost: 1313
+    EffectValue: 1.1
+  - Id: 46
+    FacilityType: 2
+    Level: 6
+    UpgradeCost: 1758
+    EffectValue: 1.12
+  - Id: 47
+    FacilityType: 2
+    Level: 7
+    UpgradeCost: 2249
+    EffectValue: 1.14
+  - Id: 48
+    FacilityType: 2
+    Level: 8
+    UpgradeCost: 2785
+    EffectValue: 1.16
+  - Id: 49
+    FacilityType: 2
+    Level: 9
+    UpgradeCost: 3363
+    EffectValue: 1.18
+  - Id: 50
+    FacilityType: 2
+    Level: 10
+    UpgradeCost: 3981
+    EffectValue: 1.2
+  - Id: 51
+    FacilityType: 2
+    Level: 11
+    UpgradeCost: 4636
+    EffectValue: 1.22
+  - Id: 52
+    FacilityType: 2
+    Level: 12
+    UpgradeCost: 5329
+    EffectValue: 1.24
+  - Id: 53
+    FacilityType: 2
+    Level: 13
+    UpgradeCost: 6057
+    EffectValue: 1.26
+  - Id: 54
+    FacilityType: 2
+    Level: 14
+    UpgradeCost: 6820
+    EffectValue: 1.28
+  - Id: 55
+    FacilityType: 2
+    Level: 15
+    UpgradeCost: 7616
+    EffectValue: 1.3
+  - Id: 56
+    FacilityType: 2
+    Level: 16
+    UpgradeCost: 8444
+    EffectValue: 1.32
+  - Id: 57
+    FacilityType: 2
+    Level: 17
+    UpgradeCost: 9305
+    EffectValue: 1.34
+  - Id: 58
+    FacilityType: 2
+    Level: 18
+    UpgradeCost: 10196
+    EffectValue: 1.36
+  - Id: 59
+    FacilityType: 2
+    Level: 19
+    UpgradeCost: 11117
+    EffectValue: 1.38
+  - Id: 60
+    FacilityType: 2
+    Level: 20
+    UpgradeCost: 12068
+    EffectValue: 1.4
