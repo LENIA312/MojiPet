@@ -49,22 +49,31 @@ namespace Mojipet.UI.Views
             titleRect.offsetMin = new Vector2(10f, 0f);
             titleRect.offsetMax = new Vector2(-10f, -10f);
 
+            // The saved texture is square (see DrawingCanvas), so the drawing area
+            // must also be laid out as an actual square -- anchor-stretching to a
+            // non-square region here would distort strokes relative to how they
+            // later get displayed in the (square) PetToken/garden view.
+            const float canvasSize = 650f;
+            var canvasAnchor = new Vector2(0.5f, 0.54f);
+
             // Faint trace guide behind the drawing canvas showing the actual glyph shape.
             var guide = UiFactory.CreateText(backgroundRect, character, 220, TextAlignmentOptions.Center);
             guide.color = new Color(1f, 1f, 1f, 0.12f);
             guide.raycastTarget = false;
             var guideRect = (RectTransform)guide.transform;
-            guideRect.anchorMin = new Vector2(0.15f, 0.24f);
-            guideRect.anchorMax = new Vector2(0.85f, 0.84f);
-            guideRect.offsetMin = Vector2.zero;
-            guideRect.offsetMax = Vector2.zero;
+            guideRect.anchorMin = canvasAnchor;
+            guideRect.anchorMax = canvasAnchor;
+            guideRect.pivot = new Vector2(0.5f, 0.5f);
+            guideRect.sizeDelta = new Vector2(canvasSize, canvasSize);
+            guideRect.anchoredPosition = Vector2.zero;
 
             _canvas = DrawingCanvas.Create(backgroundRect, 256, UiTheme.SurfaceLight, UiTheme.TextPrimary);
             var canvasRect = (RectTransform)_canvas.transform;
-            canvasRect.anchorMin = new Vector2(0.15f, 0.24f);
-            canvasRect.anchorMax = new Vector2(0.85f, 0.84f);
-            canvasRect.offsetMin = Vector2.zero;
-            canvasRect.offsetMax = Vector2.zero;
+            canvasRect.anchorMin = canvasAnchor;
+            canvasRect.anchorMax = canvasAnchor;
+            canvasRect.pivot = new Vector2(0.5f, 0.5f);
+            canvasRect.sizeDelta = new Vector2(canvasSize, canvasSize);
+            canvasRect.anchoredPosition = Vector2.zero;
 
             var clearButton = UiFactory.CreateButton(backgroundRect, "消す", () => _canvas.Clear(), ButtonStyle.Secondary);
             var clearRect = (RectTransform)clearButton.transform;
