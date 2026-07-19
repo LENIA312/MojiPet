@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'DEVICE_UDID', defaultValue: '', description: 'UDID of the paired iOS device to install the build onto (Xcode > Window > Devices and Simulators)')
-        string(name: 'TEAM_ID', defaultValue: '', description: 'Apple Personal Team ID (Xcode > Settings > Accounts > Manage Certificates)')
+        string(name: 'DEVICE_UDID', defaultValue: '00008150-00084DD80E84401C', description: 'UDID of the paired iOS device to install the build onto (Xcode > Window > Devices and Simulators). Leave blank to skip device install.')
+        string(name: 'TEAM_ID', defaultValue: 'W75NLV9SPT', description: 'Apple Personal Team ID (Xcode > Settings > Accounts > Manage Certificates)')
     }
 
     environment {
