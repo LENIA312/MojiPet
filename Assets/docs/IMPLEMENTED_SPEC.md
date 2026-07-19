@@ -532,7 +532,7 @@ Canvas
 
 | ウィンドウ | Presenter | 内容 |
 |---|---|---|
-| DictionaryView | DictionaryPresenter | 単語一覧(未理解は「？？？」表示)、完成率(X/Y、%) |
+| DictionaryView | DictionaryPresenter | 単語一覧(未理解は「？？？」表示)、完成率(X/Y、%)。50件区切りのページング(2026-07-19)+五十音行タブ(すべて/あ/か/さ/た/な/は/ま/や/ら/わ、2026-07-20)で絞り込み。読みの1文字目で行を判定(濁音・半濁音・小書き文字は対応する行にまとめる) |
 | FacilityView | FacilityPresenter | 3施設のLv・効果値・強化コストと強化ボタン。最大Lvは「強化」ボタンを非表示にしテキストのみ |
 | ShopView | ShopPresenter | 商品一覧・所持数・価格・購入ボタン(残高不足でinteractable=false) |
 | InventoryView | InventoryPresenter | 所持アイテム一覧。SeedとResearchBoostタイプのみ「使う」ボタン表示(Foodは文字詳細から使う設計) |

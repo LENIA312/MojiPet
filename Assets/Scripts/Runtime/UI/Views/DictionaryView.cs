@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Mojipet.UI.Components;
 using Mojipet.UI.Presenters;
 using TMPro;
@@ -14,7 +15,9 @@ namespace Mojipet.UI.Views
         private TextMeshProUGUI _pageText;
         private Button _prevPageButton;
         private Button _nextPageButton;
+        private readonly List<Button> _rowTabButtons = new List<Button>();
         private int _page;
+        private int _selectedRow;
 
         public static DictionaryView Create(Transform parent, DictionaryPresenter presenter)
         {
@@ -58,6 +61,53 @@ namespace Mojipet.UI.Views
             completionRect.sizeDelta = new Vector2(0f, 50f);
             completionRect.anchoredPosition = new Vector2(0f, -80f);
 
+            BuildRowTabs(backgroundRect);
+            BuildPageNav(backgroundRect);
+
+            var scrollView = UiFactory.CreateScrollView(backgroundRect, out _listContent);
+            scrollView.anchorMin = new Vector2(0f, 0f);
+            scrollView.anchorMax = new Vector2(1f, 1f);
+            scrollView.offsetMin = new Vector2(20f, 90f);
+            scrollView.offsetMax = new Vector2(-20f, -240f);
+
+            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
+            var closeRect = (RectTransform)closeButton.transform;
+            closeRect.anchorMin = new Vector2(0.5f, 0f);
+            closeRect.anchorMax = new Vector2(0.5f, 0f);
+            closeRect.pivot = new Vector2(0.5f, 0f);
+            closeRect.sizeDelta = new Vector2(200f, 60f);
+            closeRect.anchoredPosition = new Vector2(0f, 30f);
+        }
+
+        private void BuildRowTabs(RectTransform backgroundRect)
+        {
+            var rowTabsGo = new GameObject("RowTabs", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            rowTabsGo.transform.SetParent(backgroundRect, false);
+            var rowTabsRect = (RectTransform)rowTabsGo.transform;
+            rowTabsRect.anchorMin = new Vector2(0f, 1f);
+            rowTabsRect.anchorMax = new Vector2(1f, 1f);
+            rowTabsRect.pivot = new Vector2(0.5f, 1f);
+            rowTabsRect.sizeDelta = new Vector2(0f, 60f);
+            rowTabsRect.anchoredPosition = new Vector2(0f, -130f);
+
+            var rowTabsLayout = rowTabsGo.GetComponent<HorizontalLayoutGroup>();
+            rowTabsLayout.childForceExpandWidth = true;
+            rowTabsLayout.childForceExpandHeight = true;
+            rowTabsLayout.spacing = 4f;
+            rowTabsLayout.padding = new RectOffset(10, 10, 0, 0);
+
+            _rowTabButtons.Clear();
+            for (var i = 0; i < DictionaryPresenter.RowLabels.Length; i++)
+            {
+                var rowIndex = i;
+                var tabButton = UiFactory.CreateButton(
+                    rowTabsGo.transform, DictionaryPresenter.RowLabels[i], () => OnRowTabClicked(rowIndex), ButtonStyle.Secondary);
+                _rowTabButtons.Add(tabButton);
+            }
+        }
+
+        private void BuildPageNav(RectTransform backgroundRect)
+        {
             var pageNavGo = new GameObject("PageNav", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             pageNavGo.transform.SetParent(backgroundRect, false);
             var pageNavRect = (RectTransform)pageNavGo.transform;
@@ -65,7 +115,7 @@ namespace Mojipet.UI.Views
             pageNavRect.anchorMax = new Vector2(1f, 1f);
             pageNavRect.pivot = new Vector2(0.5f, 1f);
             pageNavRect.sizeDelta = new Vector2(0f, 50f);
-            pageNavRect.anchoredPosition = new Vector2(0f, -130f);
+            pageNavRect.anchoredPosition = new Vector2(0f, -190f);
 
             var pageNavLayout = pageNavGo.GetComponent<HorizontalLayoutGroup>();
             pageNavLayout.childForceExpandWidth = false;
@@ -85,20 +135,6 @@ namespace Mojipet.UI.Views
             _nextPageButton = UiFactory.CreateButton(pageNavGo.transform, "次へ＞", OnNextPageClicked, ButtonStyle.Secondary);
             var nextLayout = _nextPageButton.gameObject.AddComponent<LayoutElement>();
             nextLayout.preferredWidth = 140f;
-
-            var scrollView = UiFactory.CreateScrollView(backgroundRect, out _listContent);
-            scrollView.anchorMin = new Vector2(0f, 0f);
-            scrollView.anchorMax = new Vector2(1f, 1f);
-            scrollView.offsetMin = new Vector2(20f, 90f);
-            scrollView.offsetMax = new Vector2(-20f, -190f);
-
-            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
-            var closeRect = (RectTransform)closeButton.transform;
-            closeRect.anchorMin = new Vector2(0.5f, 0f);
-            closeRect.anchorMax = new Vector2(0.5f, 0f);
-            closeRect.pivot = new Vector2(0.5f, 0f);
-            closeRect.sizeDelta = new Vector2(200f, 60f);
-            closeRect.anchoredPosition = new Vector2(0f, 30f);
         }
 
         public void Refresh()
@@ -106,7 +142,12 @@ namespace Mojipet.UI.Views
             _completionText.text =
                 $"{_presenter.GetUnlockedCount()} / {_presenter.GetTotalCount()} ({_presenter.GetCompletionRate() * 100f:F1}%)";
 
-            var pageCount = _presenter.GetPageCount();
+            for (var i = 0; i < _rowTabButtons.Count; i++)
+            {
+                _rowTabButtons[i].interactable = i != _selectedRow;
+            }
+
+            var pageCount = _presenter.GetPageCount(_selectedRow);
             if (_page >= pageCount)
             {
                 _page = pageCount - 1;
@@ -126,10 +167,17 @@ namespace Mojipet.UI.Views
                 Destroy(_listContent.GetChild(i).gameObject);
             }
 
-            foreach (var row in _presenter.GetRows(_page))
+            foreach (var row in _presenter.GetRows(_selectedRow, _page))
             {
                 CreateRow(row);
             }
+        }
+
+        private void OnRowTabClicked(int rowIndex)
+        {
+            _selectedRow = rowIndex;
+            _page = 0;
+            Refresh();
         }
 
         private void OnPrevPageClicked()

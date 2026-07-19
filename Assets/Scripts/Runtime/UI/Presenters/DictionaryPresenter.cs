@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mojipet.Master;
 using Mojipet.Models;
 using Mojipet.Systems;
 
@@ -37,6 +38,28 @@ namespace Mojipet.UI.Presenters
         // paged and only the current page's rows are ever materialized.
         public const int PageSize = 50;
 
+        // Row index 0 is the "すべて" (all) tab; 1-10 are the gojuon (五十音) rows.
+        public static readonly string[] RowLabels =
+        {
+            "すべて", "あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"
+        };
+
+        // Voiced/semi-voiced and small-kana variants are grouped under their base
+        // consonant row, matching how gojuon-order (五十音順) dictionaries sort them.
+        private static readonly string[] RowMembers =
+        {
+            "あいうえおぁぃぅぇぉ",
+            "かきくけこがぎぐげご",
+            "さしすせそざじずぜぞ",
+            "たちつてとだぢづでどっ",
+            "なにぬねの",
+            "はひふへほばびぶべぼぱぴぷぺぽ",
+            "まみむめも",
+            "やゆよゃゅょ",
+            "らりるれろ",
+            "わをんゎ"
+        };
+
         private readonly DictionarySystem _dictionarySystem;
         private readonly WordSystem _wordSystem;
 
@@ -61,16 +84,16 @@ namespace Mojipet.UI.Presenters
             return _dictionarySystem.GetTotalWordCount();
         }
 
-        public int GetPageCount()
+        public int GetPageCount(int rowIndex)
         {
-            var total = _wordSystem.GetWords().Count;
-            var pageCount = (total + PageSize - 1) / PageSize;
+            var count = GetFilteredWords(rowIndex).Count;
+            var pageCount = (count + PageSize - 1) / PageSize;
             return pageCount < 1 ? 1 : pageCount;
         }
 
-        public IReadOnlyList<DictionaryRowData> GetRows(int page)
+        public IReadOnlyList<DictionaryRowData> GetRows(int rowIndex, int page)
         {
-            var words = _wordSystem.GetWords();
+            var words = GetFilteredWords(rowIndex);
             var start = page * PageSize;
             if (start < 0 || start >= words.Count)
             {
@@ -98,6 +121,27 @@ namespace Mojipet.UI.Presenters
             }
 
             return rows;
+        }
+
+        private IReadOnlyList<WordMasterEntry> GetFilteredWords(int rowIndex)
+        {
+            var allWords = _wordSystem.GetWords();
+            if (rowIndex <= 0)
+            {
+                return allWords;
+            }
+
+            var members = RowMembers[rowIndex - 1];
+            var filtered = new List<WordMasterEntry>();
+            foreach (var word in allWords)
+            {
+                if (!string.IsNullOrEmpty(word.Reading) && members.IndexOf(word.Reading[0]) >= 0)
+                {
+                    filtered.Add(word);
+                }
+            }
+
+            return filtered;
         }
     }
 }
