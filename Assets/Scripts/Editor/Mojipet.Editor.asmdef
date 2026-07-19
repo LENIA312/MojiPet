@@ -4,7 +4,8 @@
     "references": [
         "Mojipet.Runtime",
         "Unity.Addressables.Editor",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
