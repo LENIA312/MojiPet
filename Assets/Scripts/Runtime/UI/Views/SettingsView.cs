@@ -33,7 +33,7 @@ namespace Mojipet.UI.Views
             var rect = (RectTransform)transform;
             UiFactory.StretchFull(rect);
 
-            var background = UiFactory.CreatePanel(rect, new Color(0f, 0f, 0f, 0.9f));
+            var background = UiFactory.CreatePanel(rect, UiTheme.WindowBackground);
             var backgroundRect = (RectTransform)background.transform;
             backgroundRect.anchorMin = new Vector2(0.1f, 0.25f);
             backgroundRect.anchorMax = new Vector2(0.9f, 0.75f);
@@ -63,16 +63,16 @@ namespace Mojipet.UI.Views
             var qualityLabel = UiFactory.CreateText(backgroundRect, "画質", 22, TextAlignmentOptions.Left);
             PlaceRow(qualityLabel.transform, 0.22f, 0.38f, 0f, 0.3f);
 
-            var qualityPrevButton = UiFactory.CreateButton(backgroundRect, "<", () => ChangeQuality(-1));
+            var qualityPrevButton = UiFactory.CreateButton(backgroundRect, "<", () => ChangeQuality(-1), ButtonStyle.Secondary);
             PlaceRow(qualityPrevButton.transform, 0.22f, 0.38f, 0.32f, 0.48f);
 
             _qualityText = UiFactory.CreateText(backgroundRect, GetQualityLabel(), 20, TextAlignmentOptions.Center);
             PlaceRow(_qualityText.transform, 0.22f, 0.38f, 0.5f, 0.82f);
 
-            var qualityNextButton = UiFactory.CreateButton(backgroundRect, ">", () => ChangeQuality(1));
+            var qualityNextButton = UiFactory.CreateButton(backgroundRect, ">", () => ChangeQuality(1), ButtonStyle.Secondary);
             PlaceRow(qualityNextButton.transform, 0.22f, 0.38f, 0.84f, 1f);
 
-            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close);
+            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
             closeRect.anchorMin = new Vector2(0.3f, 0f);
             closeRect.anchorMax = new Vector2(0.7f, 0.12f);

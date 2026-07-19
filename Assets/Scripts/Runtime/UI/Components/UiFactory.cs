@@ -7,6 +7,13 @@ using UnityEngine.UI;
 
 namespace Mojipet.UI.Components
 {
+    public enum ButtonStyle
+    {
+        Primary,
+        Secondary,
+        Danger
+    }
+
     public static class UiFactory
     {
         public static Canvas CreateCanvasRoot(string name)
@@ -63,7 +70,7 @@ namespace Mojipet.UI.Components
             tmp.text = text;
             tmp.fontSize = fontSize;
             tmp.alignment = alignment;
-            tmp.color = Color.white;
+            tmp.color = UiTheme.TextPrimary;
 
             var japaneseFont = GetJapaneseFont();
             if (japaneseFont != null)
@@ -111,13 +118,13 @@ namespace Mojipet.UI.Components
             return _japaneseFont;
         }
 
-        public static Button CreateButton(Transform parent, string label, Action onClick)
+        public static Button CreateButton(Transform parent, string label, Action onClick, ButtonStyle style = ButtonStyle.Primary)
         {
             var go = new GameObject(label + "Button", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
 
             var image = go.GetComponent<Image>();
-            image.color = new Color(0.2f, 0.5f, 0.9f, 1f);
+            image.color = GetButtonColor(style);
 
             var button = go.GetComponent<Button>();
             button.targetGraphic = image;
@@ -127,9 +134,23 @@ namespace Mojipet.UI.Components
             }
 
             var text = CreateText(go.transform, label, 24, TextAlignmentOptions.Center);
+            text.color = UiTheme.TextOnPrimary;
             StretchFull((RectTransform)text.transform);
 
             return button;
+        }
+
+        private static Color GetButtonColor(ButtonStyle style)
+        {
+            switch (style)
+            {
+                case ButtonStyle.Secondary:
+                    return UiTheme.Secondary;
+                case ButtonStyle.Danger:
+                    return UiTheme.Danger;
+                default:
+                    return UiTheme.Primary;
+            }
         }
 
         public static TMP_InputField CreateInputField(Transform parent, string placeholderText)
@@ -138,7 +159,7 @@ namespace Mojipet.UI.Components
             go.transform.SetParent(parent, false);
 
             var background = go.GetComponent<Image>();
-            background.color = new Color(1f, 1f, 1f, 0.15f);
+            background.color = UiTheme.SurfaceLight;
 
             var viewportGo = new GameObject("TextArea", typeof(RectTransform), typeof(RectMask2D));
             viewportGo.transform.SetParent(go.transform, false);
@@ -149,7 +170,7 @@ namespace Mojipet.UI.Components
             viewportRect.offsetMax = new Vector2(-16f, -6f);
 
             var placeholder = CreateText(viewportRect, placeholderText, 24, TextAlignmentOptions.Left);
-            placeholder.color = new Color(1f, 1f, 1f, 0.4f);
+            placeholder.color = UiTheme.TextMuted;
             placeholder.fontStyle = FontStyles.Italic;
             StretchFull((RectTransform)placeholder.transform);
 
@@ -171,7 +192,7 @@ namespace Mojipet.UI.Components
             go.transform.SetParent(parent, false);
 
             var background = go.GetComponent<Image>();
-            background.color = new Color(1f, 1f, 1f, 0.15f);
+            background.color = UiTheme.SurfaceLight;
 
             var fillAreaGo = new GameObject("FillArea", typeof(RectTransform));
             fillAreaGo.transform.SetParent(go.transform, false);
@@ -189,7 +210,7 @@ namespace Mojipet.UI.Components
             fillRect.offsetMin = Vector2.zero;
             fillRect.offsetMax = Vector2.zero;
             var fillImage = fillGo.GetComponent<Image>();
-            fillImage.color = new Color(0.2f, 0.6f, 1f, 1f);
+            fillImage.color = UiTheme.Primary;
 
             var slider = go.GetComponent<Slider>();
             slider.targetGraphic = background;
@@ -219,7 +240,7 @@ namespace Mojipet.UI.Components
             var scrollRectTransform = (RectTransform)scrollGo.transform;
 
             var scrollImage = scrollGo.GetComponent<Image>();
-            scrollImage.color = new Color(1f, 1f, 1f, 0.05f);
+            scrollImage.color = UiTheme.SurfaceLight;
 
             var mask = scrollGo.GetComponent<Mask>();
             mask.showMaskGraphic = true;

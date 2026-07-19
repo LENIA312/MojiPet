@@ -38,7 +38,7 @@ namespace Mojipet.UI.Views
             var rect = (RectTransform)transform;
             UiFactory.StretchFull(rect);
 
-            var background = UiFactory.CreatePanel(rect, new Color(0f, 0f, 0f, 0.9f));
+            var background = UiFactory.CreatePanel(rect, UiTheme.WindowBackground);
             var backgroundRect = (RectTransform)background.transform;
             backgroundRect.anchorMin = new Vector2(0.1f, 0.25f);
             backgroundRect.anchorMax = new Vector2(0.9f, 0.75f);
@@ -66,14 +66,14 @@ namespace Mojipet.UI.Views
             researchRect.offsetMin = new Vector2(5f, 0f);
             researchRect.offsetMax = new Vector2(-5f, 0f);
 
-            _cancelButton = UiFactory.CreateButton(backgroundRect, "研究中止", OnCancelClicked);
+            _cancelButton = UiFactory.CreateButton(backgroundRect, "研究中止", OnCancelClicked, ButtonStyle.Danger);
             var cancelRect = (RectTransform)_cancelButton.transform;
             cancelRect.anchorMin = new Vector2(0.66f, 0.1f);
             cancelRect.anchorMax = new Vector2(1f, 0.28f);
             cancelRect.offsetMin = new Vector2(5f, 0f);
             cancelRect.offsetMax = new Vector2(-10f, 0f);
 
-            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close);
+            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
             closeRect.anchorMin = new Vector2(0.3f, 0f);
             closeRect.anchorMax = new Vector2(0.7f, 0.09f);

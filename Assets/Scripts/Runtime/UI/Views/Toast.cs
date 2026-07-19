@@ -28,7 +28,7 @@ namespace Mojipet.UI.Views
             rect.sizeDelta = new Vector2(600f, 70f);
             rect.anchoredPosition = new Vector2(0f, -120f);
 
-            var panel = UiFactory.CreatePanel(rect, new Color(0f, 0f, 0f, 0.75f));
+            var panel = UiFactory.CreatePanel(rect, UiTheme.Surface);
             var panelRect = (RectTransform)panel.transform;
             UiFactory.StretchFull(panelRect);
 

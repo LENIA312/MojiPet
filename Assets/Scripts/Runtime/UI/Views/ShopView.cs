@@ -33,7 +33,7 @@ namespace Mojipet.UI.Views
             var rect = (RectTransform)transform;
             UiFactory.StretchFull(rect);
 
-            var background = UiFactory.CreatePanel(rect, new Color(0f, 0f, 0f, 0.85f));
+            var background = UiFactory.CreatePanel(rect, UiTheme.WindowBackground);
             var backgroundRect = (RectTransform)background.transform;
             UiFactory.StretchFull(backgroundRect);
 
@@ -51,7 +51,7 @@ namespace Mojipet.UI.Views
             scrollView.offsetMin = new Vector2(20f, 90f);
             scrollView.offsetMax = new Vector2(-20f, -90f);
 
-            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close);
+            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
             closeRect.anchorMin = new Vector2(0.5f, 0f);
             closeRect.anchorMax = new Vector2(0.5f, 0f);

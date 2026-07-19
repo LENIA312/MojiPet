@@ -44,7 +44,7 @@ namespace Mojipet.UI.Views
             var rect = (RectTransform)transform;
             UiFactory.StretchFull(rect);
 
-            var background = UiFactory.CreatePanel(rect, new Color(0f, 0f, 0f, 0.9f));
+            var background = UiFactory.CreatePanel(rect, UiTheme.WindowBackground);
             var backgroundRect = (RectTransform)background.transform;
             UiFactory.StretchFull(backgroundRect);
 
@@ -79,7 +79,7 @@ namespace Mojipet.UI.Views
             statusRect.pivot = new Vector2(0.5f, 1f);
             statusRect.sizeDelta = new Vector2(-40f, 30f);
             statusRect.anchoredPosition = new Vector2(0f, -160f);
-            _statusText.color = new Color(1f, 0.8f, 0.3f, 1f);
+            _statusText.color = UiTheme.Danger;
 
             var scrollView = UiFactory.CreateScrollView(backgroundRect, out _listContent);
             scrollView.anchorMin = new Vector2(0f, 0f);
@@ -87,7 +87,7 @@ namespace Mojipet.UI.Views
             scrollView.offsetMin = new Vector2(20f, 90f);
             scrollView.offsetMax = new Vector2(-20f, -190f);
 
-            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close);
+            var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
             closeRect.anchorMin = new Vector2(0.5f, 0f);
             closeRect.anchorMax = new Vector2(0.5f, 0f);

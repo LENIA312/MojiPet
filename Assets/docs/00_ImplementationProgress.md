@@ -4,6 +4,18 @@
 
 ---
 
+## UI配色の統一(2026-07-19)
+
+各Viewがそれぞれ`new Color(0,0,0,0.85f)`等をバラバラに直書きしていたのを、`UI/Components/UiTheme.cs`に集約した。暖色寄りの落ち着いた配色(紫〜珊瑚色、和紙・言霊をイメージ)。
+
+- `UiFactory.CreateText`のデフォルト文字色、`CreateButton`のデフォルト色、`CreateInputField`/`CreateSlider`/`CreateScrollView`の背景色を`UiTheme`参照に変更
+- `CreateButton`に`ButtonStyle`(Primary/Secondary/Danger)引数を追加。閉じる・ページ送りは`Secondary`、研究中止は`Danger`、それ以外の主要アクションは既定の`Primary`
+- 全Window(図鑑/施設/ショップ/持ち物/文字詳細/研究選択/設定)・ヘッダー・Toastの背景色を`UiTheme.WindowBackground`/`UiTheme.Surface`に統一
+
+レイアウト(余白・配置)や演出(アニメーション)は今回の対象外(見た目・配色のみ)。
+
+---
+
 ## プレイ中に進行が止まっていた不具合(2026-07-19対応、重要)
 
 研究完了・満腹度減少・生産の言霊反映が、アプリ**起動時の`IdleSystem.CalculateOfflineProgress()`一度きり**でしか実行されておらず、フォアグラウンドでプレイしている間はずっと止まったままだった(研究が100%表示でも完了処理が走らずToastも出ない、満腹度が減らないためエサが無意味、等)。`PetSystem.md`/`ResearchSystem.md`の「一定間隔で加算する(例:5秒/10秒ごと)」という仕様を見落としていた。

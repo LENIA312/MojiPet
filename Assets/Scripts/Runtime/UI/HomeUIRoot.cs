@@ -23,7 +23,7 @@ namespace Mojipet.UI
 
             HomeWorldView.Create(canvas.transform, OpenPetDetail);
 
-            var header = UiFactory.CreatePanel(canvas.transform, new Color(0f, 0f, 0f, 0.6f));
+            var header = UiFactory.CreatePanel(canvas.transform, UiTheme.Surface);
             header.raycastTarget = false;
             var headerRect = (RectTransform)header.transform;
             headerRect.anchorMin = new Vector2(0f, 1f);
