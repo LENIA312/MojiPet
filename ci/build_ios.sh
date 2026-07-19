@@ -30,10 +30,24 @@ if [ -z "$PROJECT_FILE" ]; then
   exit 1
 fi
 
-SCHEME=$(xcodebuild -list -project "$PROJECT_FILE" | awk '/Schemes:/{flag=1; next} flag && NF{print; exit}' | xargs)
-if [ -z "$SCHEME" ]; then
-  echo "No scheme found in $PROJECT_FILE" >&2
+# Unity's exported project has multiple schemes (e.g. an app scheme plus a
+# GameAssembly library scheme); picking blindly can grab a non-app one, whose
+# archive has no Products/Applications/*.app. Prefer the actual app scheme
+# ("Unity-iPhone" in every Unity version so far), falling back to the first
+# listed scheme only if that name isn't present.
+SCHEME_LIST=$(xcodebuild -list -project "$PROJECT_FILE" | awk '/Schemes:/{flag=1; next} flag { if (NF==0) exit; gsub(/^[ \t]+|[ \t]+$/, ""); print }')
+if [ -z "$SCHEME_LIST" ]; then
+  echo "No schemes found in $PROJECT_FILE" >&2
   exit 1
+fi
+
+echo "Available schemes: $(echo "$SCHEME_LIST" | tr '\n' ',')"
+
+if echo "$SCHEME_LIST" | grep -qx "Unity-iPhone"; then
+  SCHEME="Unity-iPhone"
+else
+  SCHEME=$(echo "$SCHEME_LIST" | head -n 1)
+  echo "Warning: 'Unity-iPhone' scheme not found, falling back to '$SCHEME'" >&2
 fi
 
 mkdir -p "$BUILD_DIR"
@@ -49,5 +63,10 @@ xcodebuild \
   -archivePath "$ARCHIVE_PATH" \
   DEVELOPMENT_TEAM="$TEAM_ID" \
   archive
+
+if [ -z "$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -name "*.app" 2>/dev/null | head -n 1)" ]; then
+  echo "Archive succeeded but no .app found under $ARCHIVE_PATH/Products/Applications -- wrong scheme was likely archived." >&2
+  exit 1
+fi
 
 echo "Done. Archive at: $ARCHIVE_PATH"
