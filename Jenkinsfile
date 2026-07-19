@@ -32,13 +32,20 @@ pipeline {
             }
         }
 
-        stage('Xcode Build + Install to Device') {
+        stage('Xcode Build & Sign') {
+            steps {
+                sh 'chmod +x ci/build_ios.sh'
+                sh "ci/build_ios.sh \"$BUILD_OUTPUT\" \"${params.TEAM_ID}\""
+            }
+        }
+
+        stage('Install to Device') {
             when {
                 expression { return params.DEVICE_UDID?.trim() }
             }
             steps {
-                sh 'chmod +x ci/build_ios.sh'
-                sh "ci/build_ios.sh \"$BUILD_OUTPUT\" \"${params.DEVICE_UDID}\""
+                sh 'chmod +x ci/install_ios.sh'
+                sh "ci/install_ios.sh \"$BUILD_OUTPUT/build/export\" \"${params.DEVICE_UDID}\""
             }
         }
     }
@@ -46,6 +53,9 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'unity_build.log', allowEmptyArchive: true
+        }
+        success {
+            archiveArtifacts artifacts: 'Builds/iOS/build/export/*.ipa', allowEmptyArchive: true
         }
     }
 }

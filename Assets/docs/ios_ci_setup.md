@@ -2,9 +2,11 @@
 
 **目的**: Apple Developer Program(有料)登録なしで、無料Apple ID(Personal Team)による開発署名で実機に自動インストールする。Firebase App Distributionは使わない(Ad Hoc配布は無料アカウントでは不可のため)。
 
-**構成**: Jenkins(MacBook上) → Unity batchmodeでXcodeプロジェクトをエクスポート(`BuildScript.BuildIos`) → `xcodebuild`で開発署名しつつビルド → `xcrun devicectl`でペアリング済み実機にインストール。
+**構成**: Jenkins(MacBook上) → Unity batchmodeでXcodeプロジェクトをエクスポート(`BuildScript.BuildIos`) → `xcodebuild archive`+`-exportArchive`で開発署名済み`.ipa`を書き出し(`ci/build_ios.sh`、**実機接続は不要**) → `TEAM_ID`と`DEVICE_UDID`の両方が揃っている場合のみ`xcrun devicectl`でペアリング済み実機にインストール(`ci/install_ios.sh`、**このステップだけ実機接続が必要**)。
 
-関連ファイル: `Jenkinsfile`(リポジトリ直下)、`ci/build_ios.sh`、`Assets/Scripts/Editor/CI/BuildScript.cs`。
+`DEVICE_UDID`を空のままビルドすれば、実機を繋がずに署名済み`.ipa`の生成までできる(Jenkinsのビルド成果物として保存される)。UDIDのデバイスは事前に一度Xcodeから手動Runして、プロビジョニングプロファイルに登録済みである必要がある(下記手順5)。
+
+関連ファイル: `Jenkinsfile`(リポジトリ直下)、`ci/build_ios.sh`(ビルド・署名・書き出し)、`ci/install_ios.sh`(実機インストールのみ)、`Assets/Scripts/Editor/CI/BuildScript.cs`。
 
 ## 一度だけ行う手動セットアップ
 
@@ -18,7 +20,7 @@
 ## Jenkinsジョブの設定
 
 - Pipeline定義: リポジトリ直下の`Jenkinsfile`を使う(Pipeline script from SCM)。
-- ビルド実行時にパラメータ`DEVICE_UDID`(手順4で控えたUDID)と`TEAM_ID`(手順3で控えたTeam ID)を入力する。
+- ビルド実行時にパラメータ`TEAM_ID`(手順3で控えたTeam ID)を入力する。`DEVICE_UDID`(手順4で控えたUDID)は**任意**――空なら署名済み`.ipa`の生成までで止まり、実機は不要。実機にインストールしたい時だけ、実機を接続した状態でUDIDを入力してビルドする。
 - `Jenkinsfile`内の`UNITY_PATH`はUnity 6000.4.9f1のインストールパス想定。実際のMacBookでのインストール場所が違えば書き換える。
 
 ## 既知の制約
