@@ -1,11 +1,16 @@
 #!/bin/bash
-# Archives and exports a signed, installable .ipa from the Xcode project
-# exported by Unity (BuildScript.BuildIos). Uses free-account Development
-# signing, so no Apple Developer Program membership is required. No physical
-# device needs to be connected for this step -- it only requires that the
-# target device's UDID was already registered with the team at least once
-# (via a manual Xcode Run to that device). See ci/install_ios.sh to push the
-# resulting .ipa onto a connected device.
+# Archives the Xcode project exported by Unity (BuildScript.BuildIos) using
+# free-account Development signing, so no Apple Developer Program membership
+# is required. No physical device needs to be connected for this step -- it
+# only requires that the target device's UDID was already registered with
+# the team at least once (via a manual Xcode Run to that device).
+#
+# Note: `xcodebuild -exportArchive` (producing a portable .ipa) reliably
+# fails for free Personal Teams on the command line (IDEDistributionMethodManager
+# "Unknown Distribution Error" / "exportOptionsPlist error for key method").
+# This is a known CLI limitation, not a config bug -- so we stop at the
+# .xcarchive and install straight from the .app bundled inside it via
+# ci/install_ios.sh instead of exporting an .ipa.
 #
 # Usage: ci/build_ios.sh <xcode-project-dir> <team-id>
 
@@ -16,8 +21,6 @@ TEAM_ID="${2:?team id required}"
 
 BUILD_DIR="${XCODE_PROJECT_DIR}/build"
 ARCHIVE_PATH="${BUILD_DIR}/Mojipet.xcarchive"
-EXPORT_PATH="${BUILD_DIR}/export"
-EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions.plist"
 
 cd "$XCODE_PROJECT_DIR"
 
@@ -35,22 +38,7 @@ fi
 
 mkdir -p "$BUILD_DIR"
 
-cat > "$EXPORT_OPTIONS_PLIST" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>method</key>
-    <string>development</string>
-    <key>teamID</key>
-    <string>${TEAM_ID}</string>
-    <key>signingStyle</key>
-    <string>automatic</string>
-</dict>
-</plist>
-PLIST
-
-echo "Archiving $PROJECT_FILE (scheme: $SCHEME)"
+echo "Archiving $PROJECT_FILE (scheme: $SCHEME, team: $TEAM_ID)"
 
 xcodebuild \
   -allowProvisioningUpdates \
@@ -59,15 +47,7 @@ xcodebuild \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "$ARCHIVE_PATH" \
+  DEVELOPMENT_TEAM="$TEAM_ID" \
   archive
 
-echo "Exporting signed .ipa"
-
-xcodebuild \
-  -exportArchive \
-  -allowProvisioningUpdates \
-  -archivePath "$ARCHIVE_PATH" \
-  -exportPath "$EXPORT_PATH" \
-  -exportOptionsPlist "$EXPORT_OPTIONS_PLIST"
-
-echo "Done. Exported to: $EXPORT_PATH"
+echo "Done. Archive at: $ARCHIVE_PATH"

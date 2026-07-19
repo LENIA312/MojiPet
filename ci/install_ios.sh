@@ -1,31 +1,20 @@
 #!/bin/bash
-# Installs an already-exported .ipa (from ci/build_ios.sh) onto a connected,
-# paired iOS device. Only this step requires the device to be physically
-# reachable (USB or paired Wi-Fi) -- building/signing does not.
+# Installs the .app bundled inside an already-built .xcarchive (from
+# ci/build_ios.sh) onto a connected, paired iOS device. Only this step
+# requires the device to be physically reachable (USB or paired Wi-Fi) --
+# archiving/signing does not.
 #
-# Usage: ci/install_ios.sh <export-dir> <device-udid>
+# Usage: ci/install_ios.sh <xcarchive-path> <device-udid>
 
 set -euo pipefail
 
-EXPORT_PATH="${1:?export dir required}"
+ARCHIVE_PATH="${1:?xcarchive path required}"
 DEVICE_UDID="${2:?device udid required}"
 
-APP_PATH=$(find "$EXPORT_PATH" -maxdepth 1 -name "*.app" | head -n 1)
-
+APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -name "*.app" | head -n 1)
 if [ -z "$APP_PATH" ]; then
-  IPA_PATH=$(find "$EXPORT_PATH" -maxdepth 1 -name "*.ipa" | head -n 1)
-  if [ -z "$IPA_PATH" ]; then
-    echo "No .app or .ipa found in $EXPORT_PATH" >&2
-    exit 1
-  fi
-
-  TMP_DIR=$(mktemp -d)
-  unzip -q "$IPA_PATH" -d "$TMP_DIR"
-  APP_PATH=$(find "$TMP_DIR/Payload" -maxdepth 1 -name "*.app" | head -n 1)
-  if [ -z "$APP_PATH" ]; then
-    echo "No .app found inside $IPA_PATH" >&2
-    exit 1
-  fi
+  echo "No .app found under $ARCHIVE_PATH/Products/Applications" >&2
+  exit 1
 fi
 
 echo "Installing $APP_PATH to device $DEVICE_UDID"
