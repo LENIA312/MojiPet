@@ -284,8 +284,21 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 
 **要作業**: Unity Editorで`Tools > Import MasterData`を実行してCSVをScriptableObjectへ反映すること。
 
+## 手書き文字作成機能を追加(2026-07-19)
+
+新しい文字がことばのたねで生まれた時、プレイヤー自身がその文字を手書きで描けるようにした(愛着形成が目的、認識・採点は無し)。
+
+- `HandwritingSystem`(新規): 描いた絵を`Application.persistentDataPath/Handwriting/{characterId}.png`にPNGとして保存(SaveData本体には含めない。JSON肥大化を避けるため)。`PetData.HasHandwriting`で有無だけ管理
+- `DrawingCanvas`(新規UIコンポーネント): `RawImage`+`Texture2D`へドラッグでブラシ描画するだけの単純な自由描画キャンバス。ストローク認識・採点は無し
+- `HandwritingView`(新規): 背景に薄くその文字のグリフをガイド表示しつつ描ける全画面モーダル。「消す」「できた！」ボタンのみ
+- `OnPetUnlocked`発火時に`HomeUIRoot`が自動で`HandwritingView`を開く。`PetDetailView`に「描き直す」ボタンも追加し、後からいつでも描き直せる
+- `PetToken`(庭の文字トークン)は、手書きが保存されていればプレーンテキストの代わりにその手書き画像を表示。`OnHandwritingSaved`イベントを購読し、描き直した際にその場で表示を更新
+
+**未対応**: 図鑑画面(`DictionaryView`)や研究選択画面ではまだプレーンテキスト表示のまま(要望があれば追加対応)。
+
 ## 残っている既知の未対応
 
-- 庭のスクロール拡張、レベルアップ演出、頭上「！」表示等の見た目の作り込み
+- 庭のスクロール拡張、レベルアップ演出、頭上「！」表示等の見た目の作り込み(頭上ステータスアイコン表示は別途対応予定)
 - ことばのたね初回引き直しのチュートリアルUX
 - JMDict由来データのクレジット表記(ライセンス表示画面)が未実装
+- 研究の自動化(現状は手動選択制のまま、別途対応予定)

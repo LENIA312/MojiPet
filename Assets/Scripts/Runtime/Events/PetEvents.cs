@@ -51,4 +51,14 @@ namespace Mojipet.Events
             CharacterId = characterId;
         }
     }
+
+    public readonly struct OnHandwritingSaved
+    {
+        public readonly int CharacterId;
+
+        public OnHandwritingSaved(int characterId)
+        {
+            CharacterId = characterId;
+        }
+    }
 }

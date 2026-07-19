@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Mojipet.Core;
+using Mojipet.Events;
 using Mojipet.UI.Components;
 using TMPro;
 using UnityEngine;
@@ -13,8 +15,10 @@ namespace Mojipet.UI.Views
         private RectTransform _rectTransform;
         private RectTransform _worldBounds;
         private int _characterId;
+        private string _character;
         private Action<int> _onClicked;
         private CancellationTokenSource _cts;
+        private Transform _visual;
 
         public static PetToken Create(
             Transform parent,
@@ -35,6 +39,7 @@ namespace Mojipet.UI.Views
         {
             _worldBounds = worldBounds;
             _characterId = characterId;
+            _character = character;
             _onClicked = onClicked;
 
             _rectTransform = (RectTransform)transform;
@@ -51,12 +56,44 @@ namespace Mojipet.UI.Views
             button.targetGraphic = image;
             button.onClick.AddListener(() => _onClicked?.Invoke(_characterId));
 
-            var label = UiFactory.CreateText(_rectTransform, character, 48, TextAlignmentOptions.Center);
-            var labelRect = (RectTransform)label.transform;
-            UiFactory.StretchFull(labelRect);
+            RefreshVisual();
+
+            var gameManager = GameManager.Instance;
+            if (gameManager != null)
+            {
+                gameManager.EventBus.Subscribe<OnHandwritingSaved>(HandleHandwritingSaved);
+            }
 
             _cts = new CancellationTokenSource();
             WanderLoopAsync(_cts.Token).Forget();
+        }
+
+        private void HandleHandwritingSaved(OnHandwritingSaved e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshVisual();
+            }
+        }
+
+        private void RefreshVisual()
+        {
+            if (_visual != null)
+            {
+                Destroy(_visual.gameObject);
+            }
+
+            var visualGo = new GameObject("Visual", typeof(RectTransform));
+            visualGo.transform.SetParent(_rectTransform, false);
+            _visual = visualGo.transform;
+            UiFactory.StretchFull((RectTransform)_visual);
+
+            if (!TryShowHandwriting(_visual))
+            {
+                var label = UiFactory.CreateText(_visual, _character, 48, TextAlignmentOptions.Center);
+                var labelRect = (RectTransform)label.transform;
+                UiFactory.StretchFull(labelRect);
+            }
         }
 
         private async UniTaskVoid WanderLoopAsync(CancellationToken token)
@@ -99,6 +136,34 @@ namespace Mojipet.UI.Views
             _rectTransform.anchoredPosition = target;
         }
 
+        private bool TryShowHandwriting(Transform parent)
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null || !gameManager.HandwritingSystem.HasDrawing(_characterId))
+            {
+                return false;
+            }
+
+            var texture = gameManager.HandwritingSystem.LoadDrawing(_characterId);
+            if (texture == null)
+            {
+                return false;
+            }
+
+            var rawImageGo = new GameObject("Handwriting", typeof(RectTransform), typeof(RawImage));
+            rawImageGo.transform.SetParent(parent, false);
+            var rawImage = rawImageGo.GetComponent<RawImage>();
+            rawImage.texture = texture;
+            rawImage.raycastTarget = false;
+
+            var rawImageRect = (RectTransform)rawImageGo.transform;
+            UiFactory.StretchFull(rawImageRect);
+            rawImageRect.offsetMin = new Vector2(8f, 8f);
+            rawImageRect.offsetMax = new Vector2(-8f, -8f);
+
+            return true;
+        }
+
         private Vector2 RandomPositionInBounds()
         {
             var size = _worldBounds.rect.size;
@@ -114,6 +179,12 @@ namespace Mojipet.UI.Views
         {
             _cts?.Cancel();
             _cts?.Dispose();
+
+            var gameManager = GameManager.Instance;
+            if (gameManager != null && gameManager.EventBus != null)
+            {
+                gameManager.EventBus.Unsubscribe<OnHandwritingSaved>(HandleHandwritingSaved);
+            }
         }
     }
 }

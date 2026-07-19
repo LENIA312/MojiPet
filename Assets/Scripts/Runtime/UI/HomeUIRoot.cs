@@ -88,6 +88,7 @@ namespace Mojipet.UI
                 gameManager.EventBus.Subscribe<OnMoneyChanged>(HandleMoneyChanged);
                 gameManager.EventBus.Subscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Subscribe<OnPetLevelUp>(HandlePetLevelUp);
+                gameManager.EventBus.Subscribe<OnPetUnlocked>(HandlePetUnlocked);
                 _moneyText.text = $"言霊 {gameManager.CurrencySystem.GetMoney():N0}";
 
                 ShowOfflineRewardToastIfAny(gameManager);
@@ -115,6 +116,7 @@ namespace Mojipet.UI
                 gameManager.EventBus.Unsubscribe<OnMoneyChanged>(HandleMoneyChanged);
                 gameManager.EventBus.Unsubscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Unsubscribe<OnPetLevelUp>(HandlePetLevelUp);
+                gameManager.EventBus.Unsubscribe<OnPetUnlocked>(HandlePetUnlocked);
             }
         }
 
@@ -138,6 +140,27 @@ namespace Mojipet.UI
         private void HandlePetLevelUp(OnPetLevelUp e)
         {
             Toast.Show(_toastLayer, $"レベルアップ！ Lv{e.NewLevel}");
+        }
+
+        private void HandlePetUnlocked(OnPetUnlocked e)
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null)
+            {
+                return;
+            }
+
+            var character = "?";
+            foreach (var entry in gameManager.MasterManager.PetMaster.Entries)
+            {
+                if (entry.CharacterId == e.CharacterId)
+                {
+                    character = entry.Character;
+                    break;
+                }
+            }
+
+            HandwritingView.Create(_windowLayer, e.CharacterId, character);
         }
 
         private void OpenDictionary()

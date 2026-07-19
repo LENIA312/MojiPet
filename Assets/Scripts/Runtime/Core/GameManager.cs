@@ -27,6 +27,7 @@ namespace Mojipet.Core
         public ItemSystem ItemSystem { get; private set; }
         public ShopSystem ShopSystem { get; private set; }
         public FacilitySystem FacilitySystem { get; private set; }
+        public HandwritingSystem HandwritingSystem { get; private set; }
 
         private GameTicker _ticker;
 
@@ -64,6 +65,7 @@ namespace Mojipet.Core
             PetSystem = new PetSystem(SaveSystem, MasterManager, FacilitySystem, EventBus);
             ItemSystem = new ItemSystem(SaveSystem, PetSystem, MasterManager, EventBus);
             ShopSystem = new ShopSystem(MasterManager, CurrencySystem, ItemSystem, EventBus);
+            HandwritingSystem = new HandwritingSystem(SaveSystem, EventBus);
 
             GrantInitialItemsIfNewGame();
             WordSystem = new WordSystem(MasterManager);

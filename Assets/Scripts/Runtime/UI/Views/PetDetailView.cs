@@ -48,9 +48,16 @@ namespace Mojipet.UI.Views
             _statusText = UiFactory.CreateText(backgroundRect, string.Empty, 24, TextAlignmentOptions.TopLeft);
             var statusRect = (RectTransform)_statusText.transform;
             statusRect.anchorMin = new Vector2(0f, 0.3f);
-            statusRect.anchorMax = new Vector2(1f, 1f);
+            statusRect.anchorMax = new Vector2(0.78f, 1f);
             statusRect.offsetMin = new Vector2(20f, 0f);
-            statusRect.offsetMax = new Vector2(-20f, -10f);
+            statusRect.offsetMax = new Vector2(-10f, -10f);
+
+            var redrawButton = UiFactory.CreateButton(backgroundRect, "描き直す", OnRedrawClicked, ButtonStyle.Secondary);
+            var redrawRect = (RectTransform)redrawButton.transform;
+            redrawRect.anchorMin = new Vector2(0.78f, 0.86f);
+            redrawRect.anchorMax = new Vector2(1f, 1f);
+            redrawRect.offsetMin = new Vector2(0f, 0f);
+            redrawRect.offsetMax = new Vector2(-10f, -10f);
 
             var feedButton = UiFactory.CreateButton(backgroundRect, "エサをあげる", OnFeedClicked);
             var feedRect = (RectTransform)feedButton.transform;
@@ -139,6 +146,12 @@ namespace Mojipet.UI.Views
         {
             _presenter.CancelResearch(_characterId);
             Refresh();
+        }
+
+        private void OnRedrawClicked()
+        {
+            var data = _presenter.GetData(_characterId);
+            HandwritingView.Create(transform.parent, _characterId, data.Character);
         }
 
         private void Close()

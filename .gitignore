@@ -8,6 +8,8 @@
 /UserSettings/
 /MemoryCaptures/
 /Recordings/
+/Assets/_Recovery/
+/Assets/_Recovery.meta
 
 # Addressables generated
 /Assets/AddressableAssetsData/*/*.bin*

@@ -7,5 +7,6 @@ namespace Mojipet.Models
         public int Exp { get; set; }
         public float Hunger { get; set; }
         public bool Unlocked { get; set; }
+        public bool HasHandwriting { get; set; }
     }
 }
