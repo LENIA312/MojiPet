@@ -76,6 +76,18 @@ namespace Mojipet.UI.Components
             return image;
         }
 
+        public static Image CreateImage(Transform parent, Sprite sprite)
+        {
+            var go = new GameObject("Image", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.color = Color.white;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = false;
+            return image;
+        }
+
         private static TMP_FontAsset _japaneseFont;
         private static bool _japaneseFontInitialized;
 

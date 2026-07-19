@@ -14,6 +14,7 @@ namespace Mojipet.UI.Views
         // actually something to scroll through. Characters wander within this;
         // the player swipes/drags to look around.
         private static readonly Vector2 GardenSize = new Vector2(2160f, 3320f);
+        private const string BackgroundResourcePath = "GardenBackground";
 
         private RectTransform _worldRect;
         private readonly Dictionary<int, PetToken> _tokensByCharacterId = new Dictionary<int, PetToken>();
@@ -45,6 +46,17 @@ namespace Mojipet.UI.Views
             viewportRect.anchorMax = new Vector2(1f, safeAreaMax.y);
             viewportRect.offsetMin = new Vector2(0f, UiTheme.FooterHeight);
             viewportRect.offsetMax = new Vector2(0f, -UiTheme.HeaderHeight);
+
+            // Static backdrop behind the scrollable garden (doesn't pan with it).
+            // Drop a sprite at Assets/UI/Resources/GardenBackground.png (Texture
+            // Type: Sprite) to fill this in -- until then it's simply absent.
+            var backgroundSprite = Resources.Load<Sprite>(BackgroundResourcePath);
+            if (backgroundSprite != null)
+            {
+                var background = UiFactory.CreateImage(viewportRect, backgroundSprite);
+                background.raycastTarget = false;
+                UiFactory.StretchFull((RectTransform)background.transform);
+            }
 
             var scrollView = UiFactory.CreateFreeScrollArea(viewportRect, GardenSize, out _worldRect);
             UiFactory.StretchFull(scrollView);
