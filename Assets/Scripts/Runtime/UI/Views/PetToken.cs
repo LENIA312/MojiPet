@@ -12,6 +12,8 @@ namespace Mojipet.UI.Views
 {
     public sealed class PetToken : MonoBehaviour
     {
+        private static readonly TimeSpan StatusPollInterval = TimeSpan.FromSeconds(5);
+
         private RectTransform _rectTransform;
         private RectTransform _worldBounds;
         private int _characterId;
@@ -19,6 +21,7 @@ namespace Mojipet.UI.Views
         private Action<int> _onClicked;
         private CancellationTokenSource _cts;
         private Transform _visual;
+        private TextMeshProUGUI _statusIcon;
 
         public static PetToken Create(
             Transform parent,
@@ -57,15 +60,22 @@ namespace Mojipet.UI.Views
             button.onClick.AddListener(() => _onClicked?.Invoke(_characterId));
 
             RefreshVisual();
+            CreateStatusIcon();
+            RefreshStatusIcon();
 
             var gameManager = GameManager.Instance;
             if (gameManager != null)
             {
                 gameManager.EventBus.Subscribe<OnHandwritingSaved>(HandleHandwritingSaved);
+                gameManager.EventBus.Subscribe<OnPetFed>(HandlePetFed);
+                gameManager.EventBus.Subscribe<OnResearchStarted>(HandleResearchStarted);
+                gameManager.EventBus.Subscribe<OnResearchCompleted>(HandleResearchCompleted);
+                gameManager.EventBus.Subscribe<OnResearchCanceled>(HandleResearchCanceled);
             }
 
             _cts = new CancellationTokenSource();
             WanderLoopAsync(_cts.Token).Forget();
+            StatusPollLoopAsync(_cts.Token).Forget();
         }
 
         private void HandleHandwritingSaved(OnHandwritingSaved e)
@@ -73,6 +83,99 @@ namespace Mojipet.UI.Views
             if (e.CharacterId == _characterId)
             {
                 RefreshVisual();
+            }
+        }
+
+        private void HandlePetFed(OnPetFed e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshStatusIcon();
+            }
+        }
+
+        private void HandleResearchStarted(OnResearchStarted e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshStatusIcon();
+            }
+        }
+
+        private void HandleResearchCompleted(OnResearchCompleted e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshStatusIcon();
+            }
+        }
+
+        private void HandleResearchCanceled(OnResearchCanceled e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshStatusIcon();
+            }
+        }
+
+        private async UniTaskVoid StatusPollLoopAsync(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                await UniTask.Delay(StatusPollInterval, cancellationToken: token).SuppressCancellationThrow();
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                // Hunger decays continuously with no dedicated per-tick event, so
+                // poll it (in addition to the event-driven refreshes above, which
+                // cover research/feeding immediately).
+                RefreshStatusIcon();
+            }
+        }
+
+        private void CreateStatusIcon()
+        {
+            _statusIcon = UiFactory.CreateText(_rectTransform, string.Empty, 32, TextAlignmentOptions.Center);
+            _statusIcon.raycastTarget = false;
+            var iconRect = (RectTransform)_statusIcon.transform;
+            iconRect.anchorMin = new Vector2(1f, 1f);
+            iconRect.anchorMax = new Vector2(1f, 1f);
+            iconRect.pivot = new Vector2(0.5f, 0.5f);
+            iconRect.sizeDelta = new Vector2(44f, 44f);
+            iconRect.anchoredPosition = new Vector2(-6f, -6f);
+        }
+
+        private void RefreshStatusIcon()
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null || _statusIcon == null)
+            {
+                return;
+            }
+
+            if (!gameManager.PetSystem.IsUnlocked(_characterId))
+            {
+                return;
+            }
+
+            var hunger = gameManager.PetSystem.GetPet(_characterId).Hunger;
+
+            if (hunger <= 0f)
+            {
+                _statusIcon.text = "🍖";
+            }
+            else if (gameManager.ResearchSystem.IsResearching(_characterId))
+            {
+                // Deliberately the bare U+270D glyph, not the "✍️" VS16 emoji-presentation
+                // sequence -- the variation selector itself has no visible glyph in
+                // Noto Emoji and could render as a stray tofu box next to the pencil.
+                _statusIcon.text = "✍";
+            }
+            else
+            {
+                _statusIcon.text = string.Empty;
             }
         }
 
@@ -184,6 +287,10 @@ namespace Mojipet.UI.Views
             if (gameManager != null && gameManager.EventBus != null)
             {
                 gameManager.EventBus.Unsubscribe<OnHandwritingSaved>(HandleHandwritingSaved);
+                gameManager.EventBus.Unsubscribe<OnPetFed>(HandlePetFed);
+                gameManager.EventBus.Unsubscribe<OnResearchStarted>(HandleResearchStarted);
+                gameManager.EventBus.Unsubscribe<OnResearchCompleted>(HandleResearchCompleted);
+                gameManager.EventBus.Unsubscribe<OnResearchCanceled>(HandleResearchCanceled);
             }
         }
     }

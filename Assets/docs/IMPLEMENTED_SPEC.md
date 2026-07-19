@@ -492,9 +492,13 @@ Canvas・Button・TextMeshProUGUI等の全UIは**Unity EditorでPrefab/シーン
 
 ## 6.3 日本語フォント対応
 
-TMP Essential Resourcesの既定フォントは日本語グリフを含まないため、`UiFactory`は初回`CreateText`呼び出し時に`TMP_FontAsset.CreateFontAsset(familyName, "Regular", 90)`(`AtlasPopulationMode.DynamicOS`)でOSインストール済みフォントを動的読み込みする。候補: `Yu Gothic UI`→`Yu Gothic`→`Meiryo UI`→`Meiryo`→`MS Gothic`→`Noto Sans CJK JP`→`Noto Sans JP`→`Hiragino Sans`→`Hiragino Kaku Gothic ProN`(先頭から見つかったものを使用、以降キャッシュ)。
+TMP Essential Resourcesの既定フォントは日本語グリフを含まない。当初は`TMP_FontAsset.CreateFontAsset(familyName, "Regular", 90)`(`AtlasPopulationMode.DynamicOS`)でOSインストール済みフォントを実行時に動的読み込みする方式だったが、**Windows Editorでは動作する一方でiOS実機では静かに失敗し文字化け(tofu表示)する**既知の問題があったため、2026-07-19に埋め込みフォントアセット方式へ全面変更した。
 
-**既知の制約**: Windows/Editor向けのフォールバックであり、iOS/Android実機では別対応(埋め込みフォントアセットの事前生成)が必要。
+**現在の方式**: Noto Sans JP(OFL、`Assets/Fonts/NotoSansJP-Regular.ttf`)を同梱し、Editorメニュー`Tools > Generate Japanese Font Asset`(`Assets/Scripts/Editor/CI/FontAssetGenerator.cs`)で`TMP_FontAsset.CreateFontAsset(Font, ...)`(`AtlasPopulationMode.Dynamic`)を使い事前にTMPフォントアセットを生成、`Assets/Fonts/Resources/NotoSansJP-Regular SDF.asset`として保存する。`UiFactory.GetJapaneseFont()`は`Resources.Load<TMP_FontAsset>`でこれを読み込むだけになり、プラットフォーム非依存で動作する。
+
+**絵文字対応**: 頭上ステータスアイコン(6.5節)用に絵文字(🍖/✍等)を表示する必要があるが、Noto Sans JPには絵文字グリフが無く、カラー絵文字フォントはTMPの通常SDF描画では扱えない。そのため、SDF描画可能な**モノクロ版のNoto Emoji**(OFL、`Assets/Fonts/NotoEmoji-Regular.ttf`)を同じくフォントアセット化し、Noto Sans JPアセットの`fallbackFontAssetTable`に設定している。Noto Sans JPに無い文字は自動的にNoto Emoji側から探される。`Tools > Generate Japanese Font Asset`は1回の実行で両方のフォントアセット生成とフォールバック設定を行う。
+
+**運用上の注意**: フォントアセットは`Assets/Fonts/Resources/`にコミット済みのアセットとして保持されるため、通常は再生成不要。ソースの`.ttf`を差し替えた場合のみ、Unity Editorで`Tools > Generate Japanese Font Asset`を再実行する必要がある。
 
 ## 6.4 画面構成(`HomeUIRoot.cs`)
 
@@ -520,7 +524,8 @@ Canvas
 ## 6.5 もじの庭(`HomeWorldView` + `PetToken`)
 
 - `HomeWorldView`: 所持済み文字ぶん`PetToken`を生成。`OnPetUnlocked`購読で新規解放時に追加生成。
-- `PetToken`: 1体の文字を表すTextMeshPro。3〜6秒のランダム待機後、画面内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火。
+- `PetToken`: 1体の文字を表すTextMeshPro(手書き済みなら`HandwritingSystem`の保存画像を代わりに表示)。3〜6秒のランダム待機後、画面内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火。
+- **頭上ステータスアイコン**(2026-07-19追加): 右上に絵文字バッジを表示。優先度は満腹度0=🍖 > 研究中=✍ > 通常時は非表示。`OnPetFed`/`OnResearchStarted`/`OnResearchCompleted`/`OnResearchCanceled`で即時更新、満腹度の自然減少は専用イベントが無いため5秒ごとのポーリングでも更新。絵文字はNoto Sans JPに存在しないため、モノクロ版のNoto Emojiをフォールバックフォントとして設定して描画している(6.3節参照)
 - 庭のスクロール拡張(施設強化で庭が広がる仕様)は未実装。常に画面内に収まる範囲で移動する。
 
 ## 6.6 各ウィンドウ
@@ -619,7 +624,7 @@ Canvas
 - 単語の完全自由入力での新規追加(WordMasterに無い単語は登録不可。研究対象は`ResearchSystem`が既存データから自動選択する)
 - ことばのたね初回引き直しのチュートリアルUX
 - もじの庭のスクロール拡張(施設強化で庭が広がる仕様)
-- レベルアップ時の「跳ねる」演出、研究完了時の頭上「！」表示等の視覚演出、頭上ステータスアイコン(研究中✍️/空腹🍖等)
+- レベルアップ時の「跳ねる」演出、研究完了時の頭上「！」表示等の視覚演出
 - 実際の音声再生(設定画面の音量値は保存されるだけで、鳴らす仕組み自体が無い)
 - FacilityMasterのLv21以上のデータ(現状Lv20が事実上の上限)
 - Phase9のバランス調整(現在の数値は全て仮のプレースホルダ)
