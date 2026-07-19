@@ -299,8 +299,12 @@ namespace Mojipet.UI.Components
             scrollGo.transform.SetParent(parent, false);
             var scrollRectTransform = (RectTransform)scrollGo.transform;
 
+            // A fully transparent (alpha 0) Graphic can get optimized out of
+            // rendering entirely, which breaks Mask's stencil write and hides
+            // everything underneath it -- use a normal opaque color and hide it
+            // via showMaskGraphic instead (same approach as CreateScrollView).
             var scrollImage = scrollGo.GetComponent<Image>();
-            scrollImage.color = new Color(0f, 0f, 0f, 0f);
+            scrollImage.color = Color.white;
 
             var mask = scrollGo.GetComponent<Mask>();
             mask.showMaskGraphic = false;
