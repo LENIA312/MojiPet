@@ -347,3 +347,8 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 - もじの庭のサイズが施設強化で広がる仕様(現状は固定サイズ)、レベルアップ演出、研究完了時の頭上「！」表示等の見た目の作り込み
 - ことばのたね初回引き直しのチュートリアルUX
 - JMDict由来データのクレジット表記(ライセンス表示画面)が未実装
+
+## 庭の背景画像スロット + 研究進捗の円ゲージを追加(2026-07-20)
+
+- `HomeWorldView`に背景画像スロットを追加。`Assets/UI/Resources/GardenBackground.png`(Texture Type: Sprite)を置けば`Resources.Load`で自動的に庭のビューポート内・スクロール領域より手前に静的背景として敷かれる。画像はユーザー側で用意・配置する想定で、無ければ何も表示されず現状維持。`UiFactory.CreateImage`(スプライト版Image生成)を新設
+- `PetToken`の✍(研究中)アイコンの周りに、研究進捗を示す円形ゲージを追加。`UiFactory.CreateRadialProgress`(新設)は、ランタイムでコード生成したドーナツ型テクスチャ(`Sprite.Create`、外部アセット不要)を`Image.Type.Filled`+`fillMethod=Radial360`で使う。`fillAmount`は`ResearchSystem.GetProgressRate()`を反映し、既存のステータスアイコン更新(イベント即時+5秒ポーリング)に相乗り

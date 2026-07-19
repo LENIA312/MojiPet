@@ -22,6 +22,7 @@ namespace Mojipet.UI.Views
         private CancellationTokenSource _cts;
         private Transform _visual;
         private TextMeshProUGUI _statusIcon;
+        private Image _researchGauge;
 
         public static PetToken Create(
             Transform parent,
@@ -137,6 +138,17 @@ namespace Mojipet.UI.Views
 
         private void CreateStatusIcon()
         {
+            // Ring gauge sits behind (and slightly larger than) the icon glyph so
+            // it visually surrounds it; only shown/filled while researching.
+            _researchGauge = UiFactory.CreateRadialProgress(_rectTransform, UiTheme.Primary);
+            var gaugeRect = (RectTransform)_researchGauge.transform;
+            gaugeRect.anchorMin = new Vector2(1f, 1f);
+            gaugeRect.anchorMax = new Vector2(1f, 1f);
+            gaugeRect.pivot = new Vector2(0.5f, 0.5f);
+            gaugeRect.sizeDelta = new Vector2(54f, 54f);
+            gaugeRect.anchoredPosition = new Vector2(-6f, -6f);
+            _researchGauge.gameObject.SetActive(false);
+
             _statusIcon = UiFactory.CreateText(_rectTransform, string.Empty, 32, TextAlignmentOptions.Center);
             _statusIcon.raycastTarget = false;
             var iconRect = (RectTransform)_statusIcon.transform;
@@ -161,21 +173,26 @@ namespace Mojipet.UI.Views
             }
 
             var hunger = gameManager.PetSystem.GetPet(_characterId).Hunger;
+            var isResearching = gameManager.ResearchSystem.IsResearching(_characterId);
 
             if (hunger <= 0f)
             {
                 _statusIcon.text = "🍖";
+                _researchGauge.gameObject.SetActive(false);
             }
-            else if (gameManager.ResearchSystem.IsResearching(_characterId))
+            else if (isResearching)
             {
                 // Deliberately the bare U+270D glyph, not the "✍️" VS16 emoji-presentation
                 // sequence -- the variation selector itself has no visible glyph in
                 // Noto Emoji and could render as a stray tofu box next to the pencil.
                 _statusIcon.text = "✍";
+                _researchGauge.gameObject.SetActive(true);
+                _researchGauge.fillAmount = gameManager.ResearchSystem.GetProgressRate(_characterId);
             }
             else
             {
                 _statusIcon.text = string.Empty;
+                _researchGauge.gameObject.SetActive(false);
             }
         }
 

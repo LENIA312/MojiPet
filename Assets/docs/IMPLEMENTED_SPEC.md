@@ -527,6 +527,8 @@ Canvas
 - **スクロール可能な庭(2026-07-20追加)**: `HomeWorldView`自身のRectTransformは、`Screen.safeArea`基準でヘッダー(`UiTheme.HeaderHeight`)とフッター(`UiTheme.FooterHeight`)の間にきっちり収まる「ビューポート」になっており、その中に`UiFactory.CreateFreeScrollArea`(新設、`Mask`+`ScrollRect`。`CreateScrollView`と違い`LayoutGroup`を使わず子の`anchoredPosition`をそのまま尊重する)で2160×3320のスクロール可能な「庭」(`Content`)を配置する。`PetToken`はこの`Content`を親・徘徊境界の両方として使うため、キャラはヘッダー/フッターの裏には物理的に描画され得ず(Maskでクリップされる)、庭自体は画面より広いのでドラッグ/スワイプでスクロールして見て回れる。
 - `PetToken`: 1体の文字を表すTextMeshPro(手書き済みなら`HandwritingSystem`の保存画像を代わりに表示)。3〜6秒のランダム待機後、庭(スクロール領域のContent、画面そのものではない)内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火(`ScrollRect`との協調はUnity標準の閾値判定に任せており、タップとドラッグは自動的に区別される)。
 - **頭上ステータスアイコン**(2026-07-19追加): 右上に絵文字バッジを表示。優先度は満腹度0=🍖 > 研究中=✍ > 通常時は非表示。`OnPetFed`/`OnResearchStarted`/`OnResearchCompleted`/`OnResearchCanceled`で即時更新、満腹度の自然減少は専用イベントが無いため5秒ごとのポーリングでも更新。絵文字はNoto Sans JPに存在しないため、モノクロ版のNoto Emojiをフォールバックフォントとして設定して描画している(6.3節参照)
+- **研究進捗の円ゲージ**(2026-07-20追加): 研究中は✍アイコンの周りに円形の進捗ゲージを表示する。`UiFactory.CreateRadialProgress`(新設)が、コードでランタイム生成したドーナツ型テクスチャ(`Sprite.Create`、アセット不要)を`Image.Type.Filled`+`Radial360`で使い回す。`fillAmount`に`ResearchSystem.GetProgressRate(characterId)`を反映、更新頻度はステータスアイコンと同じ(イベント即時 + 5秒ポーリング)
+- **背景画像**(2026-07-20追加): `HomeWorldView`のビューポート直下、庭(スクロール領域)より手前に`Resources.Load<Sprite>("GardenBackground")`(`Assets/UI/Resources/GardenBackground.png`、Texture Type: Sprite)を静的背景として敷ける。庭とは違いスクロールでは動かない。画像が無ければ何も表示されない(未対応時は現状維持)
 - 施設強化で庭が広がる仕様(可変サイズ化)は未実装。庭の広さは固定(2160×3320)。
 
 ## 6.6 各ウィンドウ

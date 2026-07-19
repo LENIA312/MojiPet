@@ -88,6 +88,61 @@ namespace Mojipet.UI.Components
             return image;
         }
 
+        private static Sprite _ringSprite;
+
+        // Procedurally generated ring (donut) texture -- no art asset needed,
+        // consistent with this project's entirely code-generated UI. Cached and
+        // shared across every CreateRadialProgress call.
+        private static Sprite GetRingSprite()
+        {
+            if (_ringSprite != null)
+            {
+                return _ringSprite;
+            }
+
+            const int size = 128;
+            const float outerRadius = size / 2f - 2f;
+            const float innerRadius = outerRadius * 0.7f;
+            var center = new Vector2(size / 2f, size / 2f);
+
+            var pixels = new Color32[size * size];
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    var distance = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), center);
+                    var inside = distance <= outerRadius && distance >= innerRadius;
+                    pixels[y * size + x] = inside ? new Color32(255, 255, 255, 255) : new Color32(255, 255, 255, 0);
+                }
+            }
+
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply();
+
+            _ringSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f));
+            return _ringSprite;
+        }
+
+        // A radial-fill ring gauge (e.g. research progress around a status icon).
+        // Caller drives progress via the returned Image's fillAmount (0-1).
+        public static Image CreateRadialProgress(Transform parent, Color color)
+        {
+            var image = CreateImage(parent, GetRingSprite());
+            image.color = color;
+            image.raycastTarget = false;
+            image.type = Image.Type.Filled;
+            image.fillMethod = Image.FillMethod.Radial360;
+            image.fillOrigin = (int)Image.Origin360.Top;
+            image.fillClockwise = true;
+            image.fillAmount = 0f;
+            return image;
+        }
+
         private static TMP_FontAsset _japaneseFont;
         private static bool _japaneseFontInitialized;
 
