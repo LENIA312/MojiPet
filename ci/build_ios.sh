@@ -12,12 +12,22 @@
 # .xcarchive and install straight from the .app bundled inside it via
 # ci/install_ios.sh instead of exporting an .ipa.
 #
-# Usage: ci/build_ios.sh <xcode-project-dir> <team-id>
+# Note: automatic signing (`-allowProvisioningUpdates`) also fails headlessly
+# for free Personal Teams with "No Account for Team" even though the signing
+# certificate is present in the keychain -- xcodebuild's account lookup
+# doesn't see the Xcode.app GUI's signed-in account from this context. So we
+# sign manually instead, referencing the provisioning profile UUID that was
+# already generated on disk by the one-time manual Xcode Run (see
+# docs/ios_ci_setup.md step 5). If a new device is added later, redo that
+# manual Run and pass its new profile UUID here.
+#
+# Usage: ci/build_ios.sh <xcode-project-dir> <team-id> <provisioning-profile-uuid>
 
 set -euo pipefail
 
 XCODE_PROJECT_DIR="${1:?xcode project dir required}"
 TEAM_ID="${2:?team id required}"
+PROVISIONING_PROFILE_UUID="${3:?provisioning profile uuid required}"
 
 BUILD_DIR="${XCODE_PROJECT_DIR}/build"
 ARCHIVE_PATH="${BUILD_DIR}/Mojipet.xcarchive"
@@ -52,15 +62,17 @@ fi
 
 mkdir -p "$BUILD_DIR"
 
-echo "Archiving $PROJECT_FILE (scheme: $SCHEME, team: $TEAM_ID)"
+echo "Archiving $PROJECT_FILE (scheme: $SCHEME, team: $TEAM_ID, profile: $PROVISIONING_PROFILE_UUID)"
 
 xcodebuild \
-  -allowProvisioningUpdates \
   -project "$PROJECT_FILE" \
   -scheme "$SCHEME" \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "$ARCHIVE_PATH" \
+  CODE_SIGN_STYLE=Manual \
+  CODE_SIGN_IDENTITY="Apple Development" \
+  PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_UUID" \
   DEVELOPMENT_TEAM="$TEAM_ID" \
   archive
 
