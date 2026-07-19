@@ -53,6 +53,30 @@ namespace Mojipet.Editor.CI
             }
 
             AssetDatabase.CreateAsset(fontAsset, OutputAssetPath);
+
+            // CreateFontAsset() builds the atlas texture(s) and material in memory
+            // only; they must be explicitly persisted as sub-assets of the font
+            // asset file (this is what the Font Asset Creator window's own Save
+            // routine does), otherwise the atlas texture reference is left
+            // unassigned once Unity reloads the asset -- which is what caused
+            // TMP_PreBuildProcessor's UnassignedReferenceException on m_AtlasTextures.
+            if (fontAsset.atlasTextures != null)
+            {
+                foreach (var texture in fontAsset.atlasTextures)
+                {
+                    if (texture != null)
+                    {
+                        AssetDatabase.AddObjectToAsset(texture, fontAsset);
+                    }
+                }
+            }
+
+            if (fontAsset.material != null)
+            {
+                AssetDatabase.AddObjectToAsset(fontAsset.material, fontAsset);
+            }
+
+            EditorUtility.SetDirty(fontAsset);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
