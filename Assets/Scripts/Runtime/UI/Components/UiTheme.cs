@@ -40,5 +40,10 @@ namespace Mojipet.UI.Components
 
         // ボタン上のテキスト
         public static readonly Color TextOnPrimary = Color.white;
+
+        // ヘッダー/フッターバーの高さ(canvas単位)。HomeUIRootとHomeWorldViewの両方が、
+        // もじの庭のスクロール領域をこの2つの帯の間にきっちり収めるために参照する。
+        public const float HeaderHeight = 110f;
+        public const float FooterHeight = 150f;
     }
 }

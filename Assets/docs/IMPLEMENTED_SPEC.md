@@ -524,9 +524,10 @@ Canvas
 ## 6.5 もじの庭(`HomeWorldView` + `PetToken`)
 
 - `HomeWorldView`: 所持済み文字ぶん`PetToken`を生成。`OnPetUnlocked`購読で新規解放時に追加生成。
-- `PetToken`: 1体の文字を表すTextMeshPro(手書き済みなら`HandwritingSystem`の保存画像を代わりに表示)。3〜6秒のランダム待機後、画面内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火。
+- **スクロール可能な庭(2026-07-20追加)**: `HomeWorldView`自身のRectTransformは、`Screen.safeArea`基準でヘッダー(`UiTheme.HeaderHeight`)とフッター(`UiTheme.FooterHeight`)の間にきっちり収まる「ビューポート」になっており、その中に`UiFactory.CreateFreeScrollArea`(新設、`Mask`+`ScrollRect`。`CreateScrollView`と違い`LayoutGroup`を使わず子の`anchoredPosition`をそのまま尊重する)で2160×3320のスクロール可能な「庭」(`Content`)を配置する。`PetToken`はこの`Content`を親・徘徊境界の両方として使うため、キャラはヘッダー/フッターの裏には物理的に描画され得ず(Maskでクリップされる)、庭自体は画面より広いのでドラッグ/スワイプでスクロールして見て回れる。
+- `PetToken`: 1体の文字を表すTextMeshPro(手書き済みなら`HandwritingSystem`の保存画像を代わりに表示)。3〜6秒のランダム待機後、庭(スクロール領域のContent、画面そのものではない)内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火(`ScrollRect`との協調はUnity標準の閾値判定に任せており、タップとドラッグは自動的に区別される)。
 - **頭上ステータスアイコン**(2026-07-19追加): 右上に絵文字バッジを表示。優先度は満腹度0=🍖 > 研究中=✍ > 通常時は非表示。`OnPetFed`/`OnResearchStarted`/`OnResearchCompleted`/`OnResearchCanceled`で即時更新、満腹度の自然減少は専用イベントが無いため5秒ごとのポーリングでも更新。絵文字はNoto Sans JPに存在しないため、モノクロ版のNoto Emojiをフォールバックフォントとして設定して描画している(6.3節参照)
-- 庭のスクロール拡張(施設強化で庭が広がる仕様)は未実装。常に画面内に収まる範囲で移動する。
+- 施設強化で庭が広がる仕様(可変サイズ化)は未実装。庭の広さは固定(2160×3320)。
 
 ## 6.6 各ウィンドウ
 
@@ -623,7 +624,7 @@ Canvas
 
 - 単語の完全自由入力での新規追加(WordMasterに無い単語は登録不可。研究対象は`ResearchSystem`が既存データから自動選択する)
 - ことばのたね初回引き直しのチュートリアルUX
-- もじの庭のスクロール拡張(施設強化で庭が広がる仕様)
+- もじの庭のサイズが施設強化で広がる仕様(現状は固定2160×3320。スクロール自体は2026-07-20に実装済み)
 - レベルアップ時の「跳ねる」演出、研究完了時の頭上「！」表示等の視覚演出
 - 実際の音声再生(設定画面の音量値は保存されるだけで、鳴らす仕組み自体が無い)
 - FacilityMasterのLv21以上のデータ(現状Lv20が事実上の上限)

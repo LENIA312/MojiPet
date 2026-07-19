@@ -10,6 +10,11 @@ namespace Mojipet.UI.Views
 {
     public sealed class HomeWorldView : MonoBehaviour
     {
+        // The garden's pannable area, larger than any single viewport so there's
+        // actually something to scroll through. Characters wander within this;
+        // the player swipes/drags to look around.
+        private static readonly Vector2 GardenSize = new Vector2(2160f, 3320f);
+
         private RectTransform _worldRect;
         private readonly Dictionary<int, PetToken> _tokensByCharacterId = new Dictionary<int, PetToken>();
         private Action<int> _onPetClicked;
@@ -27,8 +32,22 @@ namespace Mojipet.UI.Views
         private void Initialize(Action<int> onPetClicked)
         {
             _onPetClicked = onPetClicked;
-            _worldRect = (RectTransform)transform;
-            UiFactory.StretchFull(_worldRect);
+
+            // This object is the visible viewport window, clipped to sit strictly
+            // between the header and footer bars (via Screen.safeArea, matching
+            // HomeUIRoot's header/footer placement) so characters can never wander
+            // underneath the UI chrome -- the mask makes it geometrically
+            // impossible rather than relying on wander-bounds math alone.
+            var viewportRect = (RectTransform)transform;
+            var safeAreaMin = UiFactory.GetSafeAreaAnchorMin();
+            var safeAreaMax = UiFactory.GetSafeAreaAnchorMax();
+            viewportRect.anchorMin = new Vector2(0f, safeAreaMin.y);
+            viewportRect.anchorMax = new Vector2(1f, safeAreaMax.y);
+            viewportRect.offsetMin = new Vector2(0f, UiTheme.FooterHeight);
+            viewportRect.offsetMax = new Vector2(0f, -UiTheme.HeaderHeight);
+
+            var scrollView = UiFactory.CreateFreeScrollArea(viewportRect, GardenSize, out _worldRect);
+            UiFactory.StretchFull(scrollView);
 
             var gameManager = GameManager.Instance;
             if (gameManager == null)

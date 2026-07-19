@@ -282,5 +282,46 @@ namespace Mojipet.UI.Components
 
             return scrollRectTransform;
         }
+
+        // Free 2D pan area (both axes, no auto-layout) for content larger than its
+        // viewport that children are positioned freely within via anchoredPosition
+        // -- e.g. もじの庭, where characters wander a garden bigger than the screen.
+        // Unlike CreateScrollView, content has no LayoutGroup: children keep
+        // whatever position they set themselves.
+        public static RectTransform CreateFreeScrollArea(Transform parent, Vector2 contentSize, out RectTransform content)
+        {
+            var scrollGo = new GameObject(
+                "FreeScrollView",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(ScrollRect),
+                typeof(Mask));
+            scrollGo.transform.SetParent(parent, false);
+            var scrollRectTransform = (RectTransform)scrollGo.transform;
+
+            var scrollImage = scrollGo.GetComponent<Image>();
+            scrollImage.color = new Color(0f, 0f, 0f, 0f);
+
+            var mask = scrollGo.GetComponent<Mask>();
+            mask.showMaskGraphic = false;
+
+            var contentGo = new GameObject("Content", typeof(RectTransform));
+            contentGo.transform.SetParent(scrollGo.transform, false);
+            content = (RectTransform)contentGo.transform;
+            content.anchorMin = new Vector2(0.5f, 0.5f);
+            content.anchorMax = new Vector2(0.5f, 0.5f);
+            content.pivot = new Vector2(0.5f, 0.5f);
+            content.sizeDelta = contentSize;
+            content.anchoredPosition = Vector2.zero;
+
+            var scrollRect = scrollGo.GetComponent<ScrollRect>();
+            scrollRect.content = content;
+            scrollRect.horizontal = true;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.inertia = true;
+
+            return scrollRectTransform;
+        }
     }
 }

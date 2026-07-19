@@ -332,8 +332,18 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 - タブ切り替え時はページを0にリセット。選択中のタブボタンは`interactable=false`にして押せない=選択中、と視覚的に示す簡易実装
 - フィルタ後の件数に応じて`GetPageCount(rowIndex)`も連動
 
+## もじの庭にスクロール可能な移動領域と境界制限を追加(2026-07-20)
+
+キャラがヘッダー/フッターの裏に隠れる、画面外に出る、という報告への対応。根本原因は`PetToken`の徘徊境界(`RandomPositionInBounds`)が渡された`worldBounds`の矩形をそのまま使っていたが、その`worldBounds`(=`HomeWorldView`自身)がキャンバス全体にストレッチされていたため、ヘッダー/フッターの領域も含めてどこでも移動できてしまっていたこと。
+
+- `UiTheme`に`HeaderHeight`/`FooterHeight`定数を追加(`HomeUIRoot`のヘッダー/フッター実サイズと、`HomeWorldView`のビューポート計算の両方が同じ値を参照するようにし、値のズレを防止)
+- `UiFactory.CreateFreeScrollArea`(新設): `CreateScrollView`と似た`Mask`+`ScrollRect`構成だが、`LayoutGroup`を使わず子の`anchoredPosition`をそのまま尊重する版。もじの庭のように、各子(`PetToken`)が自前で位置を管理する自由配置コンテンツ向け
+- `HomeWorldView`を「ヘッダー/フッターの間にきっちり収まるビューポート(`Screen.safeArea`基準)」+「その中の2160×3320のスクロール可能な庭(`Content`)」という2階層に再構成。`PetToken`の親・徘徊境界の両方をこの`Content`に変更
+- 結果: キャラは庭(`Content`)の外に出ることが構造的に不可能になり(境界チェックの話ではなく、そもそも親のサイズがそこまでしかない)、ヘッダー/フッターの裏にも`Mask`でクリップされ描画され得なくなった。加えて庭自体が画面より広いため、ドラッグ/スワイプでスクロールして見て回れるようになった(`ScrollRect.movementType = Clamped`)
+- タップとドラッグの区別はUnity標準の`ScrollRect`のドラッグ閾値判定に任せており、`PetToken`のタップ(`OpenPetDetail`)は従来どおり動作する
+
 ## 残っている既知の未対応
 
-- 庭のスクロール拡張、レベルアップ演出、研究完了時の頭上「！」表示等の見た目の作り込み
+- もじの庭のサイズが施設強化で広がる仕様(現状は固定サイズ)、レベルアップ演出、研究完了時の頭上「！」表示等の見た目の作り込み
 - ことばのたね初回引き直しのチュートリアルUX
 - JMDict由来データのクレジット表記(ライセンス表示画面)が未実装

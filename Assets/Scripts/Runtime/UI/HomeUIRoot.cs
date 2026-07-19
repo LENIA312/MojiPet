@@ -32,7 +32,7 @@ namespace Mojipet.UI
             headerRect.anchorMin = new Vector2(0f, safeAreaMax.y);
             headerRect.anchorMax = new Vector2(1f, safeAreaMax.y);
             headerRect.pivot = new Vector2(0.5f, 1f);
-            headerRect.sizeDelta = new Vector2(0f, 110f);
+            headerRect.sizeDelta = new Vector2(0f, UiTheme.HeaderHeight);
             headerRect.anchoredPosition = Vector2.zero;
 
             _moneyText = UiFactory.CreateText(header.transform, "言霊 0", 28, TextAlignmentOptions.Left);
@@ -51,7 +51,7 @@ namespace Mojipet.UI
             footerRect.anchorMin = new Vector2(0f, safeAreaMin.y);
             footerRect.anchorMax = new Vector2(1f, safeAreaMin.y);
             footerRect.pivot = new Vector2(0.5f, 0f);
-            footerRect.sizeDelta = new Vector2(0f, 150f);
+            footerRect.sizeDelta = new Vector2(0f, UiTheme.FooterHeight);
             footerRect.anchoredPosition = Vector2.zero;
 
             var buttonRowGo = new GameObject("ButtonRow", typeof(RectTransform), typeof(UnityEngine.UI.HorizontalLayoutGroup));
