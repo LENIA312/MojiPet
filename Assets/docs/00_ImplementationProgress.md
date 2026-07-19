@@ -266,8 +266,26 @@ Phase1で作成した`WordMaster.csv`は18語のみで、46文字中一部しか
 - ヘッダーに5つ目のボタン(設定)を追加するにあたり、手動座標配置だと横幅が足りず重なるリスクがあったため`HorizontalLayoutGroup`による自動整列に変更(2段組みヘッダー)。
 - ヘッダー背景パネルの`raycastTarget`を無効化。ヘッダーが伸びたことで、下に隠れたもじの庭の文字がタップできなくなる問題を予防。
 
+## 辞書を本番用データに差し替え(2026-07-19)
+
+WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の19,866語へ全面差し替えた(ユーザー指示: 段階導入ではなく最初から本番規模で生成)。
+
+**データ取得元**: `scriptin/jmdict-simplified`の`jmdict-eng-common`版(GitHub Releasesから取得、common語22,617エントリ)。
+**生成方法**: Node.jsスクリプトで(1)代表読み仮名をカタカナ→ひらがな変換、(2)ひらがな2〜20文字・読み重複除去でフィルタ、(3)`misc`タグ(arch/obs/rare/vulg/derog/sens/X)を含む語義を除外、(4)`field`/品詞タグからCategoryを自動分類(PERSONのみ約60語を読みキュレーションで補完。JMDictに人物名詞の分類タグが無いため)、(5)読み文字数から`Difficulty`/`RequiredLevel`/`ResearchTimeSeconds`を算出。詳細は`docs/IMPLEMENTED_SPEC.md`3.1節。
+
+**確認済み**:
+- 46文字全てカバー(「を」を含む単語も収録、旧来の既知の未対応事項を解消)
+- `RequiredLevel`最大33、`ResearchTimeSeconds`最大8,670秒(約2.4時間) — いずれも`MaxPetLevel`(100)の範囲内
+- CSVに要エスケープ文字(カンマ・ダブルクォート)を含む行は無し
+
+**波及効果**: VERB(5,004語)/ADJECTIVE(2,794語)/PERSON(63語)に初めて実データが入ったため、`CategoryMaster`による図書館レベル別カテゴリ解放(既存機能、これまでは実質不使用)が実際にプレイに影響するようになった。図書館Lv1の初期状態ではこの3カテゴリの単語は研究候補に出ない。
+
+**未対応**: JMDict/jmdict-simplifiedはCC BY-SA 4.0のためクレジット表記が必要だが、ゲーム内にライセンス表示の仕組みが無い。別途対応が必要。
+
+**要作業**: Unity Editorで`Tools > Import MasterData`を実行してCSVをScriptableObjectへ反映すること。
+
 ## 残っている既知の未対応
 
 - 庭のスクロール拡張、レベルアップ演出、頭上「！」表示等の見た目の作り込み
 - ことばのたね初回引き直しのチュートリアルUX
-- 「を」を含む単語が無い(WordMasterの内容次第で今後対応)
+- JMDict由来データのクレジット表記(ライセンス表示画面)が未実装

@@ -20,6 +20,8 @@
 
 **主要ライブラリ**: UniTask(埋め込みパッケージ)、Addressables、TextMeshPro、Newtonsoft.Json、Unity Input System。
 
+**単語データソース**: [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)(EDRDG、CC BY-SA 4.0)。詳細は3.1節。
+
 ---
 
 # 2. アーキテクチャ
@@ -120,7 +122,20 @@ CSVは`Assets/MasterData/*.csv`。`Tools > Import MasterData`メニューで`Ass
 
 `Length`(文字数)と`Characters`(構成文字の配列)はCSVには無く、インポート時に`Reading`から自動生成される。
 
-現在38語収録(WordId 1〜38)。46文字中45文字がいずれかの単語でカバーされている。**「を」を含む単語は存在しない**(助詞専用文字のため自然な単語が作りにくく未対応)。
+現在19,866語収録(WordId 1〜19866、2026-07-19に本番データへ差し替え)。46文字全てがいずれかの単語でカバーされている(「を」を含む複合語も収録済み)。
+
+**データソース**: [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html)(EDRDG、CC BY-SA 4.0)の`jmdict-simplified`(scriptin/jmdict-simplified)配布の`jmdict-eng-common`版(common語のみ、22,617エントリ)から自動生成。生成手順:
+
+1. 各エントリの代表読み仮名(`common`優先)を採用し、カタカナはUnicodeコードポイントシフト(U+30A1〜U+30F6 → U+3041〜U+3096)でひらがなに変換
+2. ひらがな(+長音記号「ー」)のみ・2〜20文字の読みだけを許可、読みの重複は除去
+3. `misc`タグに`arch`(古語)/`obs`(廃語)/`rare`(まれ)/`vulg`(下品)/`derog`(蔑称)/`sens`(センシティブ)/`X`(教育用ソフトウェアには不適切、とJMDict自身が明記)のいずれかを含む語義は除外。全ての語義が除外対象の単語は収録しない
+4. `field`タグ(`bot`→PLANT、`zool`/`ornith`/`fish`/`vet`→ANIMAL、`food`→FOOD、`geogr`/`geol`/`place`/`astron`→PLACE)と品詞タグ(動詞活用タグ→VERB、`adj-*`→ADJECTIVE、`n`系→OBJECT、それ以外→OTHER)で`Category`を自動分類。JMDictには人物を指す一般名詞向けの分類タグが無いため、家族・職業・人称代名詞など約60語は読みのキュレーションリストで`PERSON`に上書き
+5. `Difficulty = max(1, 読み文字数-1)`、`RequiredLevel = clamp(1, 100, (Difficulty-1)×2+1)`、`ResearchTimeSeconds = 30 × Difficulty²`
+6. 表示`Word`は`common`な漢字表記を優先、無ければ最初の漢字表記、無ければ仮名表記(原表記のまま、カタカナ語はカタカナ表示)
+
+カテゴリ内訳: OBJECT 10,954 / VERB 5,004 / ADJECTIVE 2,794 / OTHER 851 / FOOD 134 / PERSON 63 / PLACE 45 / ANIMAL 15 / PLANT 6。最大`RequiredLevel`は33、最大`ResearchTimeSeconds`は8,670秒(約2.4時間)で、いずれも`MaxPetLevel`(100)以内に収まる。
+
+**ライセンス表示について**: JMDictはCC BY-SA 4.0のためクレジット表記が必要だが、**ゲーム内には現状クレジット/ライセンス表示画面が存在しない**。別途対応が必要(未実装)。
 
 ## 3.2 PetMaster
 
@@ -239,7 +254,7 @@ Difficulty 1〜100、`RequiredSeconds = 30 × Difficulty²`。**現在ResearchSy
 | ADJECTIVE | 3 |
 | PERSON | 4 |
 
-現在WordMasterで実際に使われているカテゴリ(OTHER/PLANT/ANIMAL/FOOD/PLACE/OBJECT)は全て必要Lv1以下なので、図書館強化前でも現行データには影響しない。VERB/ADJECTIVE/PERSONの単語は今のところ存在しないため、この解放判定は将来のデータ追加時に効いてくる。
+2026-07-19の辞書差し替え以降、VERB(5,004語)/ADJECTIVE(2,794語)/PERSON(63語)にも実データが入ったため、図書館レベルによるカテゴリ解放が実際にゲームプレイへ影響するようになった(図書館Lv1の初期状態ではVERB/ADJECTIVE/PERSONの単語は研究候補に出ない)。
 
 マスタに存在しないカテゴリは「常に解放」扱い(フォールバック)。
 
