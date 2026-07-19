@@ -133,10 +133,5 @@ namespace Mojipet.UI.Presenters
 
             return false;
         }
-
-        public void CancelResearch(int characterId)
-        {
-            _researchSystem.CancelResearch(characterId);
-        }
     }
 }

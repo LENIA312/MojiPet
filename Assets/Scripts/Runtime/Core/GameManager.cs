@@ -70,7 +70,7 @@ namespace Mojipet.Core
             GrantInitialItemsIfNewGame();
             WordSystem = new WordSystem(MasterManager);
             DictionarySystem = new DictionarySystem(SaveSystem, WordSystem, EventBus);
-            ResearchSystem = new ResearchSystem(SaveSystem, MasterManager, WordSystem, PetSystem, DictionarySystem, EventBus);
+            ResearchSystem = new ResearchSystem(SaveSystem, MasterManager, WordSystem, PetSystem, DictionarySystem, FacilitySystem, EventBus);
             IdleSystem = new IdleSystem(SaveSystem, PetSystem, ResearchSystem, CurrencySystem, MasterManager, EventBus);
 
             IdleSystem.CalculateOfflineProgress();

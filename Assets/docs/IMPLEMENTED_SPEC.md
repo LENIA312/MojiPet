@@ -395,7 +395,7 @@ GetResearchSpeed = BaseResearchSpeed(PetMaster, 固定1.0)
 
 起動時にMasterManager.WordMaster.Entriesから4種のキャッシュを構築: WordId→Entry、CharacterId→Word一覧、Category→Word一覧、Reading→Entry。
 
-**API**: `GetWord(wordId)`, `FindByReading(reading)`(見つからなければnull), `GetWords()`, `GetWordsByCharacter(characterId)`, `GetWordsByCategory(category)`, `GetWordsByDifficulty(difficulty)`, `GetResearchTime(wordId)`, `GetDifficulty/GetRequiredLevel/GetCategory(wordId)`, `GetCharacters(wordId)`(構成文字のCharacterId一覧), `ContainsCharacter(wordId, characterId)`, `IsLevelUnlocked(wordId, petLevel)`, `GetCandidateWords(characterId, petLevel, excludedWordIds)`(所持文字・レベル・除外セットで絞り込み。**カテゴリのフィルタはここでは行わない**、後述のResearchSelectPresenterが担当), `SelectRandomWord(candidates)`。
+**API**: `GetWord(wordId)`, `FindByReading(reading)`(見つからなければnull), `GetWords()`, `GetWordsByCharacter(characterId)`, `GetWordsByCategory(category)`, `GetWordsByDifficulty(difficulty)`, `GetResearchTime(wordId)`, `GetDifficulty/GetRequiredLevel/GetCategory(wordId)`, `GetCharacters(wordId)`(構成文字のCharacterId一覧), `ContainsCharacter(wordId, characterId)`, `IsLevelUnlocked(wordId, petLevel)`, `GetCandidateWords(characterId, petLevel, excludedWordIds)`(所持文字・レベル・除外セットで絞り込み。**カテゴリのフィルタはここでは行わない**、`ResearchSystem`が図書館レベルと照合して行う), `SelectRandomWord(candidates)`。
 
 ## 5.9 DictionarySystem
 
@@ -407,7 +407,11 @@ GetResearchSpeed = BaseResearchSpeed(PetMaster, 固定1.0)
 
 研究の開始・進行・完了を管理。**1文字につき同時1件まで**(`_researchByCharacterId`はCharacterIdをキーとする単一レコード)。
 
-**進行方式**: UTC時刻ベース。研究開始時に速度倍率を1回だけ計算し、`FinishUtc = StartUtc + (WordMaster.ResearchTimeSeconds / 開始時点の速度倍率)`を確定する。**開始後に満腹度・レベル・施設・バフが変化しても、進行中の研究の所要時間は再計算されない**(重要な設計上の割り切り)。
+**研究は完全自動(2026-07-19〜)**: プレイヤーが単語を選ぶUIは存在しない。`UpdateResearch()`の末尾で毎回`AutoStartResearchForIdleCharacters()`を呼び、**研究中でなく・満腹度が0より大きい**全ての解放済みキャラについて、そのキャラで研究可能な候補(所持文字・レベル・図書館カテゴリ解放・理解済み/研究中との重複除外を満たすもの)からランダムに1つ選んで自動的に`StartResearch`する。候補が無ければそのキャラは待機する。手動選択画面(旧`ResearchSelectView`/`ResearchSelectPresenter`、読み仮名自由入力検索を含む)は撤去済み。
+
+**満腹度0での挙動**: `CanStartResearch`/`StartResearch`は満腹度0以下のキャラを拒否する。さらに`UpdateResearch()`は、研究中のキャラの満腹度が0以下になった時点でその研究を`CancelResearch`する(進行度は破棄)。満腹度による効果は他システム(生産・研究速度の乗率)と異なり、ここは**時間経過で自然回復せず、給餌で満腹度が0を超えるまで再開しない**。
+
+**進行方式**: UTC時刻ベース。研究開始時に速度倍率を1回だけ計算し、`FinishUtc = StartUtc + (WordMaster.ResearchTimeSeconds / 開始時点の速度倍率)`を確定する。**開始後にレベル・施設・バフが変化しても、進行中の研究の所要時間は再計算されない**(重要な設計上の割り切り。満腹度0のみ例外的にキャンセルとして即時反映される)。
 
 **API**:
 
@@ -416,13 +420,16 @@ GetResearchSpeed = BaseResearchSpeed(PetMaster, 固定1.0)
 | `IsResearching(characterId)` | bool |
 | `GetResearch(characterId)` | 存在しなければ`InvalidOperationException` |
 | `GetAllResearch()` | 全員分 |
-| `CanStartResearch(characterId, wordId)` | 解放済み・非研究中・未理解・文字を含む・レベル十分の全条件をbool判定(例外を投げない安全版) |
+| `CanStartResearch(characterId, wordId)` | 解放済み・非研究中・満腹度>0・未理解・文字を含む・レベル十分の全条件をbool判定(例外を投げない安全版) |
 | `StartResearch(characterId, wordId)` | 条件を満たさなければ各種`InvalidOperationException`。成功で`OnResearchStarted` |
 | `CancelResearch(characterId)` | 研究中でなければ何もしない。成功で`OnResearchCanceled`(進行度は破棄) |
-| `UpdateResearch()` | **引数なし**。現在時刻がFinishUtcを超えている研究を全て`CompleteResearch`する。GameTickerから5秒おきに呼ばれる |
+| `UpdateResearch()` | **引数なし**。満腹度0キャラの研究をキャンセル→FinishUtc超過分を`CompleteResearch`→`AutoStartResearchForIdleCharacters()`で空いているキャラに自動着手、の順で実行。GameTickerから5秒おきに呼ばれる |
+| `AutoStartResearchForIdleCharacters()` | 研究中でなく満腹度>0の全キャラに対し、候補からランダムに1つ選び自動着手。`UpdateResearch()`から呼ばれるほか、`IdleSystem`のオフライン進行計算経由でも間接的に呼ばれる |
 | `CompleteResearch(characterId)` | `DictionarySystem.UnlockWord()` → 単語の構成文字**全員**(所持しているキャラのみ)に経験値付与 → `OnResearchCompleted` |
 | `GetRemainingTime(characterId)` | 研究していなければ`TimeSpan.Zero` |
 | `GetProgressRate(characterId)` | 0〜1(FinishUtc/StartUtcからの逆算) |
+
+コンストラクタに`FacilitySystem`が追加された(カテゴリの図書館レベル判定に必要なため)。
 
 **経験値計算**(`CompleteResearch`内、`CalculateExperience`):
 ```
@@ -524,8 +531,8 @@ Canvas
 | FacilityView | FacilityPresenter | 3施設のLv・効果値・強化コストと強化ボタン。最大Lvは「強化」ボタンを非表示にしテキストのみ |
 | ShopView | ShopPresenter | 商品一覧・所持数・価格・購入ボタン(残高不足でinteractable=false) |
 | InventoryView | InventoryPresenter | 所持アイテム一覧。SeedとResearchBoostタイプのみ「使う」ボタン表示(Foodは文字詳細から使う設計) |
-| PetDetailView | PetDetailPresenter | Lv・経験値・満腹度・生産量・研究状況・研究速度バフ残り時間。「エサをあげる」「研究する」「研究中止」ボタン |
-| ResearchSelectView | ResearchSelectPresenter | 研究候補一覧(タップで開始) + 読み仮名での自由入力検索欄 |
+| PetDetailView | PetDetailPresenter | Lv・経験値・満腹度・生産量・研究状況・研究速度バフ残り時間。「エサをあげる」「描き直す」ボタン(研究は完全自動のため選択・中止ボタンは無い) |
+| HandwritingView | ― | 新しい文字が生まれた時に自動で開く手書きキャンバス。背景に薄いガイド文字、「消す」「できた！」ボタン |
 | SettingsView | SettingsPresenter | BGM/SE音量スライダー、画質切替(QualitySettingsに連動) |
 
 いずれも背景Panelで画面全体を覆う簡易モーダル(`raycastTarget`は既定のtrueのまま、下にあるWorld/Headerへのクリックを遮断する)。閉じるボタンで`Destroy(gameObject)`。
@@ -583,12 +590,12 @@ Canvas
 
 1. 初回起動 → 新規ゲーム作成 → 「ことばのたね」1個が自動付与される
 2. 「持ち物」を開き、ことばのたねの「使う」をタップ → ランダムな未所持文字が1体解放される(`OnPetUnlocked`)
-3. もじの庭に文字が出現し、ゆっくり徘徊し始める
-4. 文字をタップ → 詳細画面 → 「研究する」→ 候補一覧または読み仮名検索から単語を選ぶ → 研究開始(`OnResearchStarted`)
-5. 5秒ごとのGameTickerが進行を判定。満腹度が減り、言霊が生産され、研究完了時刻を過ぎた研究があれば自動完了する
+3. `OnPetUnlocked`を受けて`HandwritingView`が自動的に開く。ガイド文字をなぞって手書きし「できた！」で保存(スキップも可)
+4. もじの庭に文字が出現し、ゆっくり徘徊し始める(手書き済みならその絵を表示)
+5. 5秒ごとのGameTickerが進行を判定。満腹度が減り、言霊が生産され、研究完了時刻を過ぎた研究があれば自動完了し、研究中でなく満腹度が残っているキャラは自動で次の単語の研究を開始する(`OnResearchStarted`。プレイヤーが単語を選ぶ操作は無い)
 6. 研究完了(`OnResearchCompleted`) → 図鑑に単語登録 → 単語の構成文字全員(所持分)に経験値付与 → レベルアップがあれば`OnPetLevelUp` → 画面上部にToast通知
 7. 言霊が貯まったらショップでアイテム購入、または施設(研究所/図書館/もじの庭)を強化
-8. ことばの実は文字詳細画面から「エサをあげる」で使用(満腹度回復)
+8. ことばの実は文字詳細画面から「エサをあげる」で使用(満腹度回復)。満腹度が0になると研究は自動的に中断され、給餌で満腹度が回復するまで新規研究も始まらない
 9. ひらめきのしずくは持ち物から直接使用(以後の新規研究に速度バフ)
 10. アプリを閉じて再度開くと、離れていた時間ぶんの満腹度減少・研究進行・言霊生産がまとめて計算され(上限8時間)、Toastで通知される
 
@@ -603,16 +610,17 @@ Canvas
 - WordMasterは拡張スキーマ(RequiredLevel/ResearchTimeを単語ごとにCSV直接管理、ResearchMasterは実質未使用)
 - SaveDataは`systems/SaveSystem.md`をベースに消耗品用InventoryDataを追加した独自スキーマ
 - WordSystemはEventBusに依存せずイベントを発火しない
-- 研究進行はUTC時刻ベースで、開始時に速度を確定(以後の満腹度/バフ変化を遡って反映しない)
+- 研究進行はUTC時刻ベースで、開始時に速度を確定(以後の満腹度/バフ変化を遡って反映しない。ただし満腹度0によるキャンセルのみ即時反映される例外)
+- 研究対象の単語はプレイヤーが選ばず、`ResearchSystem`が候補からランダムに自動選択する(2026-07-19、元設計の手動選択画面から変更)
+- 新しい文字が生まれた時、プレイヤーが手書きでその文字を描ける(`HandwritingView`、2026-07-19追加。元設計には無い機能)
 
 ## 9.2 未実装
 
-- 単語の完全自由入力での新規追加(WordMasterに無い単語は登録不可。あくまで既存データの中から選ぶ/検索する形)
+- 単語の完全自由入力での新規追加(WordMasterに無い単語は登録不可。研究対象は`ResearchSystem`が既存データから自動選択する)
 - ことばのたね初回引き直しのチュートリアルUX
 - もじの庭のスクロール拡張(施設強化で庭が広がる仕様)
-- レベルアップ時の「跳ねる」演出、研究完了時の頭上「！」表示等の視覚演出
+- レベルアップ時の「跳ねる」演出、研究完了時の頭上「！」表示等の視覚演出、頭上ステータスアイコン(研究中✍️/空腹🍖等)
 - 実際の音声再生(設定画面の音量値は保存されるだけで、鳴らす仕組み自体が無い)
-- 「を」を含む研究可能な単語(WordMasterに存在しない)
 - FacilityMasterのLv21以上のデータ(現状Lv20が事実上の上限)
 - Phase9のバランス調整(現在の数値は全て仮のプレースホルダ)
 

@@ -1,9 +1,7 @@
-using Mojipet.Core;
 using Mojipet.UI.Components;
 using Mojipet.UI.Presenters;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Mojipet.UI.Views
 {
@@ -12,8 +10,6 @@ namespace Mojipet.UI.Views
         private PetDetailPresenter _presenter;
         private int _characterId;
         private TextMeshProUGUI _statusText;
-        private Button _researchButton;
-        private Button _cancelButton;
 
         public static PetDetailView Create(Transform parent, PetDetailPresenter presenter, int characterId)
         {
@@ -62,23 +58,9 @@ namespace Mojipet.UI.Views
             var feedButton = UiFactory.CreateButton(backgroundRect, "エサをあげる", OnFeedClicked);
             var feedRect = (RectTransform)feedButton.transform;
             feedRect.anchorMin = new Vector2(0f, 0.1f);
-            feedRect.anchorMax = new Vector2(0.33f, 0.28f);
+            feedRect.anchorMax = new Vector2(1f, 0.28f);
             feedRect.offsetMin = new Vector2(10f, 0f);
-            feedRect.offsetMax = new Vector2(-5f, 0f);
-
-            _researchButton = UiFactory.CreateButton(backgroundRect, "研究する", OnResearchClicked);
-            var researchRect = (RectTransform)_researchButton.transform;
-            researchRect.anchorMin = new Vector2(0.33f, 0.1f);
-            researchRect.anchorMax = new Vector2(0.66f, 0.28f);
-            researchRect.offsetMin = new Vector2(5f, 0f);
-            researchRect.offsetMax = new Vector2(-5f, 0f);
-
-            _cancelButton = UiFactory.CreateButton(backgroundRect, "研究中止", OnCancelClicked, ButtonStyle.Danger);
-            var cancelRect = (RectTransform)_cancelButton.transform;
-            cancelRect.anchorMin = new Vector2(0.66f, 0.1f);
-            cancelRect.anchorMax = new Vector2(1f, 0.28f);
-            cancelRect.offsetMin = new Vector2(5f, 0f);
-            cancelRect.offsetMax = new Vector2(-10f, 0f);
+            feedRect.offsetMax = new Vector2(-10f, 0f);
 
             var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
@@ -96,9 +78,19 @@ namespace Mojipet.UI.Views
                 ? $"経験値 {data.Exp} / {data.RequiredExp}"
                 : $"経験値 {data.Exp}（最大レベル）";
 
-            var researchLine = data.IsResearching
-                ? $"研究中: {data.ResearchingWordDisplay}（{data.ResearchProgress * 100f:F0}%）"
-                : "研究中の単語はありません";
+            string researchLine;
+            if (data.IsResearching)
+            {
+                researchLine = $"研究中: {data.ResearchingWordDisplay}（{data.ResearchProgress * 100f:F0}%）";
+            }
+            else if (data.Hunger <= 0f)
+            {
+                researchLine = "お腹が空いていて研究できません";
+            }
+            else
+            {
+                researchLine = "つぎの研究をさがしています…";
+            }
 
             var boostLine = data.IsResearchBoostActive
                 ? $"研究速度アップ中（残り{(int)data.ResearchBoostRemaining.TotalMinutes}分）\n"
@@ -112,39 +104,11 @@ namespace Mojipet.UI.Views
                 $"言霊生産 {data.ProductionRate}/秒\n" +
                 boostLine +
                 $"{researchLine}";
-
-            _researchButton.interactable = !data.IsResearching;
-            _cancelButton.interactable = data.IsResearching;
         }
 
         private void OnFeedClicked()
         {
             _presenter.Feed(_characterId);
-            Refresh();
-        }
-
-        private void OnResearchClicked()
-        {
-            var gameManager = GameManager.Instance;
-            if (gameManager == null)
-            {
-                return;
-            }
-
-            var researchPresenter = new ResearchSelectPresenter(
-                gameManager.WordSystem,
-                gameManager.DictionarySystem,
-                gameManager.ResearchSystem,
-                gameManager.PetSystem,
-                gameManager.FacilitySystem,
-                gameManager.MasterManager);
-
-            ResearchSelectView.Create(transform.parent, researchPresenter, _characterId, Refresh);
-        }
-
-        private void OnCancelClicked()
-        {
-            _presenter.CancelResearch(_characterId);
             Refresh();
         }
 
