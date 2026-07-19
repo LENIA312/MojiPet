@@ -101,6 +101,10 @@ namespace Mojipet.Systems
                     UseSeed();
                     break;
 
+                case ItemType.ResearchBoost:
+                    _petSystem.ApplyResearchBoost(itemEntry.Value, TimeSpan.FromSeconds(itemEntry.DurationSeconds));
+                    break;
+
                 default:
                     throw new NotSupportedException(
                         $"ItemSystem.Use does not yet support ItemType: {itemEntry.ItemType}");

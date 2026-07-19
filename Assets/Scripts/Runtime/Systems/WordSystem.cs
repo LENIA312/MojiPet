@@ -15,6 +15,7 @@ namespace Mojipet.Systems
         private readonly Dictionary<int, List<WordMasterEntry>> _wordsByCharacterId = new Dictionary<int, List<WordMasterEntry>>();
         private readonly Dictionary<CategoryId, List<WordMasterEntry>> _wordsByCategory = new Dictionary<CategoryId, List<WordMasterEntry>>();
         private readonly Dictionary<string, int> _characterIdByCharacter = new Dictionary<string, int>();
+        private readonly Dictionary<string, WordMasterEntry> _wordsByReading = new Dictionary<string, WordMasterEntry>();
 
         public WordSystem(MasterManager masterManager)
         {
@@ -33,10 +34,12 @@ namespace Mojipet.Systems
             _wordsById.Clear();
             _wordsByCharacterId.Clear();
             _wordsByCategory.Clear();
+            _wordsByReading.Clear();
 
             foreach (var word in _masterManager.WordMaster.Entries)
             {
                 _wordsById[word.WordId] = word;
+                _wordsByReading[word.Reading] = word;
 
                 if (!_wordsByCategory.TryGetValue(word.Category, out var categoryList))
                 {
@@ -72,6 +75,11 @@ namespace Mojipet.Systems
             }
 
             return word;
+        }
+
+        public WordMasterEntry FindByReading(string reading)
+        {
+            return !string.IsNullOrEmpty(reading) && _wordsByReading.TryGetValue(reading, out var word) ? word : null;
         }
 
         public IReadOnlyList<WordMasterEntry> GetWords()

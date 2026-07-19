@@ -19,15 +19,18 @@ MonoBehaviour:
     ItemType: 0
     Price: 100
     Value: 30
+    DurationSeconds: 0
   - Id: 2
     Name: "\u3072\u3089\u3081\u304D\u306E\u3057\u305A\u304F"
     Description: "\u4E00\u5B9A\u6642\u9593\u7814\u7A76\u901F\u5EA6\u304C\u4E0A\u6607\u3059\u308B"
     ItemType: 1
     Price: 500
     Value: 1.5
+    DurationSeconds: 600
   - Id: 3
     Name: "\u3053\u3068\u3070\u306E\u305F\u306D"
     Description: "\u65B0\u3057\u3044\u6587\u5B57\u3092\u4EF2\u9593\u306B\u3059\u308B"
     ItemType: 2
     Price: 5000
     Value: 0
+    DurationSeconds: 0

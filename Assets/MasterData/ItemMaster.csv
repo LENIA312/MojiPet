@@ -1,4 +1,4 @@
-Id,Name,Description,ItemType,Price,Value
-1,ことばの実,満腹度を回復する,Food,100,30
-2,ひらめきのしずく,一定時間研究速度が上昇する,ResearchBoost,500,1.5
-3,ことばのたね,新しい文字を仲間にする,Seed,5000,0
+Id,Name,Description,ItemType,Price,Value,DurationSeconds
+1,ことばの実,満腹度を回復する,Food,100,30,0
+2,ひらめきのしずく,一定時間研究速度が上昇する,ResearchBoost,500,1.5,600
+3,ことばのたね,新しい文字を仲間にする,Seed,5000,0,0

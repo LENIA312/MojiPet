@@ -93,12 +93,17 @@ namespace Mojipet.UI.Views
                 ? $"研究中: {data.ResearchingWordDisplay}（{data.ResearchProgress * 100f:F0}%）"
                 : "研究中の単語はありません";
 
+            var boostLine = data.IsResearchBoostActive
+                ? $"研究速度アップ中（残り{(int)data.ResearchBoostRemaining.TotalMinutes}分）\n"
+                : string.Empty;
+
             _statusText.text =
                 $"{data.Character}\n" +
                 $"Lv {data.Level}\n" +
                 $"{expLine}\n" +
                 $"満腹度 {data.Hunger:F0}\n" +
                 $"言霊生産 {data.ProductionRate}/秒\n" +
+                boostLine +
                 $"{researchLine}";
 
             _researchButton.interactable = !data.IsResearching;
@@ -123,7 +128,9 @@ namespace Mojipet.UI.Views
                 gameManager.WordSystem,
                 gameManager.DictionarySystem,
                 gameManager.ResearchSystem,
-                gameManager.PetSystem);
+                gameManager.PetSystem,
+                gameManager.FacilitySystem,
+                gameManager.MasterManager);
 
             ResearchSelectView.Create(transform.parent, researchPresenter, _characterId, Refresh);
         }

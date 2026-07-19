@@ -15,5 +15,7 @@ namespace Mojipet.Models
         public IdleData Idle { get; set; } = new IdleData();
         public InventoryData Inventory { get; set; } = new InventoryData();
         public SettingsData Settings { get; set; } = new SettingsData();
+        public DateTime ResearchBoostExpiryUtc { get; set; }
+        public float ResearchBoostMultiplier { get; set; } = 1f;
     }
 }

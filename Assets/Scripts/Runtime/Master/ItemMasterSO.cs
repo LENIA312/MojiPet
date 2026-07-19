@@ -14,6 +14,7 @@ namespace Mojipet.Master
         public ItemType ItemType;
         public int Price;
         public float Value;
+        public int DurationSeconds;
     }
 
     [CreateAssetMenu(fileName = "ItemMaster", menuName = "Mojipet/Master/ItemMaster")]

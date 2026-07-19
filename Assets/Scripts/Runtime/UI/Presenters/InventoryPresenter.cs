@@ -51,7 +51,8 @@ namespace Mojipet.UI.Presenters
                     if (itemMaster.Id == pair.Key)
                     {
                         name = itemMaster.Name;
-                        canUseDirectly = itemMaster.ItemType == ItemType.Seed;
+                        canUseDirectly = itemMaster.ItemType == ItemType.Seed
+                                         || itemMaster.ItemType == ItemType.ResearchBoost;
                         break;
                     }
                 }

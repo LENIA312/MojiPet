@@ -16,6 +16,8 @@ namespace Mojipet.UI.Presenters
         public readonly bool IsResearching;
         public readonly string ResearchingWordDisplay;
         public readonly float ResearchProgress;
+        public readonly bool IsResearchBoostActive;
+        public readonly System.TimeSpan ResearchBoostRemaining;
 
         public PetDetailData(
             int characterId,
@@ -27,7 +29,9 @@ namespace Mojipet.UI.Presenters
             long productionRate,
             bool isResearching,
             string researchingWordDisplay,
-            float researchProgress)
+            float researchProgress,
+            bool isResearchBoostActive,
+            System.TimeSpan researchBoostRemaining)
         {
             CharacterId = characterId;
             Character = character;
@@ -39,6 +43,8 @@ namespace Mojipet.UI.Presenters
             IsResearching = isResearching;
             ResearchingWordDisplay = researchingWordDisplay;
             ResearchProgress = researchProgress;
+            IsResearchBoostActive = isResearchBoostActive;
+            ResearchBoostRemaining = researchBoostRemaining;
         }
     }
 
@@ -110,7 +116,9 @@ namespace Mojipet.UI.Presenters
                 _petSystem.GetProductionRate(characterId),
                 isResearching,
                 researchingWordDisplay,
-                progress);
+                progress,
+                _petSystem.IsResearchBoostActive(),
+                _petSystem.GetResearchBoostRemaining());
         }
 
         public bool Feed(int characterId)

@@ -15,6 +15,7 @@ namespace Mojipet.Managers
         public ShopMasterSO ShopMaster { get; private set; }
         public ResearchMasterSO ResearchMaster { get; private set; }
         public GameBalanceMasterSO GameBalanceMaster { get; private set; }
+        public CategoryMasterSO CategoryMaster { get; private set; }
 
         public async UniTask InitializeAsync()
         {
@@ -26,6 +27,7 @@ namespace Mojipet.Managers
             ShopMaster = await LoadAsync<ShopMasterSO>("Master/ShopMaster");
             ResearchMaster = await LoadAsync<ResearchMasterSO>("Master/ResearchMaster");
             GameBalanceMaster = await LoadAsync<GameBalanceMasterSO>("Master/GameBalanceMaster");
+            CategoryMaster = await LoadAsync<CategoryMasterSO>("Master/CategoryMaster");
         }
 
         private static async UniTask<T> LoadAsync<T>(string address) where T : Object

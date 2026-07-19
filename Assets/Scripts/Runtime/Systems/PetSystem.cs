@@ -4,6 +4,7 @@ using Mojipet.Events;
 using Mojipet.Managers;
 using Mojipet.Master;
 using Mojipet.Models;
+using Mojipet.Utilities;
 
 namespace Mojipet.Systems
 {
@@ -194,8 +195,41 @@ namespace Mojipet.Systems
             var expEntry = GetExpEntry(pet.Level);
             var hungerMultiplier = GetHungerMultiplier(pet.Hunger);
             var facilityMultiplier = _facilitySystem.GetEffectValue(FacilityId.ResearchLab);
+            var boostMultiplier = GetResearchBoostMultiplier();
 
-            return petMaster.BaseResearchSpeed * expEntry.ResearchSpeedMultiplier * hungerMultiplier * facilityMultiplier;
+            return petMaster.BaseResearchSpeed
+                   * expEntry.ResearchSpeedMultiplier
+                   * hungerMultiplier
+                   * facilityMultiplier
+                   * boostMultiplier;
+        }
+
+        public void ApplyResearchBoost(float multiplier, TimeSpan duration)
+        {
+            if (multiplier <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(multiplier), "multiplier must be positive.");
+            }
+
+            _saveSystem.Data.ResearchBoostMultiplier = multiplier;
+            _saveSystem.Data.ResearchBoostExpiryUtc = TimeUtility.CurrentUtc + duration;
+            _saveSystem.Save();
+        }
+
+        public bool IsResearchBoostActive()
+        {
+            return TimeUtility.CurrentUtc < _saveSystem.Data.ResearchBoostExpiryUtc;
+        }
+
+        public TimeSpan GetResearchBoostRemaining()
+        {
+            var remaining = _saveSystem.Data.ResearchBoostExpiryUtc - TimeUtility.CurrentUtc;
+            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+
+        private float GetResearchBoostMultiplier()
+        {
+            return IsResearchBoostActive() ? _saveSystem.Data.ResearchBoostMultiplier : 1f;
         }
 
         public long CalculateProduction(TimeSpan elapsed)

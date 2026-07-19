@@ -24,51 +24,39 @@ namespace Mojipet.UI
             HomeWorldView.Create(canvas.transform, OpenPetDetail);
 
             var header = UiFactory.CreatePanel(canvas.transform, new Color(0f, 0f, 0f, 0.6f));
+            header.raycastTarget = false;
             var headerRect = (RectTransform)header.transform;
             headerRect.anchorMin = new Vector2(0f, 1f);
             headerRect.anchorMax = new Vector2(1f, 1f);
             headerRect.pivot = new Vector2(0.5f, 1f);
-            headerRect.sizeDelta = new Vector2(0f, 100f);
+            headerRect.sizeDelta = new Vector2(0f, 170f);
             headerRect.anchoredPosition = Vector2.zero;
 
             _moneyText = UiFactory.CreateText(header.transform, "言霊 0", 28, TextAlignmentOptions.Left);
             var moneyRect = (RectTransform)_moneyText.transform;
-            moneyRect.anchorMin = new Vector2(0f, 0f);
-            moneyRect.anchorMax = new Vector2(0.6f, 1f);
+            moneyRect.anchorMin = new Vector2(0f, 0.55f);
+            moneyRect.anchorMax = new Vector2(1f, 1f);
             moneyRect.offsetMin = new Vector2(20f, 0f);
-            moneyRect.offsetMax = Vector2.zero;
+            moneyRect.offsetMax = new Vector2(-20f, 0f);
 
-            var dictionaryButton = UiFactory.CreateButton(header.transform, "図鑑", OpenDictionary);
-            var dictionaryButtonRect = (RectTransform)dictionaryButton.transform;
-            dictionaryButtonRect.anchorMin = new Vector2(1f, 0.5f);
-            dictionaryButtonRect.anchorMax = new Vector2(1f, 0.5f);
-            dictionaryButtonRect.pivot = new Vector2(1f, 0.5f);
-            dictionaryButtonRect.sizeDelta = new Vector2(160f, 70f);
-            dictionaryButtonRect.anchoredPosition = new Vector2(-20f, 0f);
+            var buttonRowGo = new GameObject("ButtonRow", typeof(RectTransform), typeof(UnityEngine.UI.HorizontalLayoutGroup));
+            buttonRowGo.transform.SetParent(header.transform, false);
+            var buttonRowRect = (RectTransform)buttonRowGo.transform;
+            buttonRowRect.anchorMin = new Vector2(0f, 0f);
+            buttonRowRect.anchorMax = new Vector2(1f, 0.5f);
+            buttonRowRect.offsetMin = new Vector2(10f, 5f);
+            buttonRowRect.offsetMax = new Vector2(-10f, -5f);
 
-            var facilityButton = UiFactory.CreateButton(header.transform, "施設", OpenFacility);
-            var facilityButtonRect = (RectTransform)facilityButton.transform;
-            facilityButtonRect.anchorMin = new Vector2(1f, 0.5f);
-            facilityButtonRect.anchorMax = new Vector2(1f, 0.5f);
-            facilityButtonRect.pivot = new Vector2(1f, 0.5f);
-            facilityButtonRect.sizeDelta = new Vector2(160f, 70f);
-            facilityButtonRect.anchoredPosition = new Vector2(-200f, 0f);
+            var buttonRowLayout = buttonRowGo.GetComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            buttonRowLayout.childForceExpandWidth = true;
+            buttonRowLayout.childForceExpandHeight = true;
+            buttonRowLayout.spacing = 8f;
 
-            var shopButton = UiFactory.CreateButton(header.transform, "ショップ", OpenShop);
-            var shopButtonRect = (RectTransform)shopButton.transform;
-            shopButtonRect.anchorMin = new Vector2(1f, 0.5f);
-            shopButtonRect.anchorMax = new Vector2(1f, 0.5f);
-            shopButtonRect.pivot = new Vector2(1f, 0.5f);
-            shopButtonRect.sizeDelta = new Vector2(160f, 70f);
-            shopButtonRect.anchoredPosition = new Vector2(-380f, 0f);
-
-            var inventoryButton = UiFactory.CreateButton(header.transform, "持ち物", OpenInventory);
-            var inventoryButtonRect = (RectTransform)inventoryButton.transform;
-            inventoryButtonRect.anchorMin = new Vector2(1f, 0.5f);
-            inventoryButtonRect.anchorMax = new Vector2(1f, 0.5f);
-            inventoryButtonRect.pivot = new Vector2(1f, 0.5f);
-            inventoryButtonRect.sizeDelta = new Vector2(160f, 70f);
-            inventoryButtonRect.anchoredPosition = new Vector2(-560f, 0f);
+            UiFactory.CreateButton(buttonRowGo.transform, "図鑑", OpenDictionary);
+            UiFactory.CreateButton(buttonRowGo.transform, "施設", OpenFacility);
+            UiFactory.CreateButton(buttonRowGo.transform, "ショップ", OpenShop);
+            UiFactory.CreateButton(buttonRowGo.transform, "持ち物", OpenInventory);
+            UiFactory.CreateButton(buttonRowGo.transform, "設定", OpenSettings);
 
             var toastLayerGo = new GameObject("Toasts", typeof(RectTransform));
             toastLayerGo.transform.SetParent(canvas.transform, false);
@@ -184,6 +172,18 @@ namespace Mojipet.UI
 
             var presenter = new InventoryPresenter(gameManager.ItemSystem, gameManager.MasterManager);
             InventoryView.Create(_windowLayer, presenter, _toastLayer);
+        }
+
+        private void OpenSettings()
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null)
+            {
+                return;
+            }
+
+            var presenter = new SettingsPresenter(gameManager.SaveSystem);
+            SettingsView.Create(_windowLayer, presenter);
         }
 
         private void OpenPetDetail(int characterId)

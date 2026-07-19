@@ -132,6 +132,81 @@ namespace Mojipet.UI.Components
             return button;
         }
 
+        public static TMP_InputField CreateInputField(Transform parent, string placeholderText)
+        {
+            var go = new GameObject("InputField", typeof(RectTransform), typeof(Image), typeof(TMP_InputField));
+            go.transform.SetParent(parent, false);
+
+            var background = go.GetComponent<Image>();
+            background.color = new Color(1f, 1f, 1f, 0.15f);
+
+            var viewportGo = new GameObject("TextArea", typeof(RectTransform), typeof(RectMask2D));
+            viewportGo.transform.SetParent(go.transform, false);
+            var viewportRect = (RectTransform)viewportGo.transform;
+            viewportRect.anchorMin = Vector2.zero;
+            viewportRect.anchorMax = Vector2.one;
+            viewportRect.offsetMin = new Vector2(16f, 6f);
+            viewportRect.offsetMax = new Vector2(-16f, -6f);
+
+            var placeholder = CreateText(viewportRect, placeholderText, 24, TextAlignmentOptions.Left);
+            placeholder.color = new Color(1f, 1f, 1f, 0.4f);
+            placeholder.fontStyle = FontStyles.Italic;
+            StretchFull((RectTransform)placeholder.transform);
+
+            var text = CreateText(viewportRect, string.Empty, 24, TextAlignmentOptions.Left);
+            StretchFull((RectTransform)text.transform);
+
+            var inputField = go.GetComponent<TMP_InputField>();
+            inputField.textViewport = viewportRect;
+            inputField.textComponent = text;
+            inputField.placeholder = placeholder;
+            inputField.targetGraphic = background;
+
+            return inputField;
+        }
+
+        public static Slider CreateSlider(Transform parent, float minValue, float maxValue, float initialValue, Action<float> onValueChanged)
+        {
+            var go = new GameObject("Slider", typeof(RectTransform), typeof(Image), typeof(Slider));
+            go.transform.SetParent(parent, false);
+
+            var background = go.GetComponent<Image>();
+            background.color = new Color(1f, 1f, 1f, 0.15f);
+
+            var fillAreaGo = new GameObject("FillArea", typeof(RectTransform));
+            fillAreaGo.transform.SetParent(go.transform, false);
+            var fillAreaRect = (RectTransform)fillAreaGo.transform;
+            fillAreaRect.anchorMin = new Vector2(0f, 0f);
+            fillAreaRect.anchorMax = new Vector2(1f, 1f);
+            fillAreaRect.offsetMin = new Vector2(6f, 6f);
+            fillAreaRect.offsetMax = new Vector2(-6f, -6f);
+
+            var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillGo.transform.SetParent(fillAreaGo.transform, false);
+            var fillRect = (RectTransform)fillGo.transform;
+            fillRect.anchorMin = new Vector2(0f, 0f);
+            fillRect.anchorMax = new Vector2(0f, 1f);
+            fillRect.offsetMin = Vector2.zero;
+            fillRect.offsetMax = Vector2.zero;
+            var fillImage = fillGo.GetComponent<Image>();
+            fillImage.color = new Color(0.2f, 0.6f, 1f, 1f);
+
+            var slider = go.GetComponent<Slider>();
+            slider.targetGraphic = background;
+            slider.fillRect = fillRect;
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = minValue;
+            slider.maxValue = maxValue;
+            slider.value = initialValue;
+
+            if (onValueChanged != null)
+            {
+                slider.onValueChanged.AddListener(value => onValueChanged(value));
+            }
+
+            return slider;
+        }
+
         public static RectTransform CreateScrollView(Transform parent, out RectTransform content)
         {
             var scrollGo = new GameObject(

@@ -11,6 +11,8 @@ namespace Mojipet.UI.Views
     {
         private ResearchSelectPresenter _presenter;
         private RectTransform _listContent;
+        private TMP_InputField _searchInput;
+        private TextMeshProUGUI _statusText;
         private int _characterId;
         private Action _onStarted;
 
@@ -54,11 +56,36 @@ namespace Mojipet.UI.Views
             titleRect.sizeDelta = new Vector2(0f, 80f);
             titleRect.anchoredPosition = Vector2.zero;
 
+            _searchInput = UiFactory.CreateInputField(backgroundRect, "読みで検索（例：あめ）");
+            var searchRect = (RectTransform)_searchInput.transform;
+            searchRect.anchorMin = new Vector2(0f, 1f);
+            searchRect.anchorMax = new Vector2(1f, 1f);
+            searchRect.pivot = new Vector2(0.5f, 1f);
+            searchRect.sizeDelta = new Vector2(-220f, 60f);
+            searchRect.anchoredPosition = new Vector2(-100f, -90f);
+
+            var searchButton = UiFactory.CreateButton(backgroundRect, "決定", OnSearchSubmit);
+            var searchButtonRect = (RectTransform)searchButton.transform;
+            searchButtonRect.anchorMin = new Vector2(1f, 1f);
+            searchButtonRect.anchorMax = new Vector2(1f, 1f);
+            searchButtonRect.pivot = new Vector2(1f, 1f);
+            searchButtonRect.sizeDelta = new Vector2(160f, 60f);
+            searchButtonRect.anchoredPosition = new Vector2(-20f, -90f);
+
+            _statusText = UiFactory.CreateText(backgroundRect, string.Empty, 18, TextAlignmentOptions.Left);
+            var statusRect = (RectTransform)_statusText.transform;
+            statusRect.anchorMin = new Vector2(0f, 1f);
+            statusRect.anchorMax = new Vector2(1f, 1f);
+            statusRect.pivot = new Vector2(0.5f, 1f);
+            statusRect.sizeDelta = new Vector2(-40f, 30f);
+            statusRect.anchoredPosition = new Vector2(0f, -160f);
+            _statusText.color = new Color(1f, 0.8f, 0.3f, 1f);
+
             var scrollView = UiFactory.CreateScrollView(backgroundRect, out _listContent);
             scrollView.anchorMin = new Vector2(0f, 0f);
             scrollView.anchorMax = new Vector2(1f, 1f);
             scrollView.offsetMin = new Vector2(20f, 90f);
-            scrollView.offsetMax = new Vector2(-20f, -90f);
+            scrollView.offsetMax = new Vector2(-20f, -190f);
 
             var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close);
             var closeRect = (RectTransform)closeButton.transform;
@@ -79,7 +106,7 @@ namespace Mojipet.UI.Views
             var candidates = _presenter.GetCandidates(_characterId);
             if (candidates.Count == 0)
             {
-                var empty = UiFactory.CreateText(_listContent, "研究できる単語がありません", 22, TextAlignmentOptions.Left);
+                var empty = UiFactory.CreateText(_listContent, "候補一覧に単語がありません（読みで検索はできます）", 22, TextAlignmentOptions.Left);
                 var emptyLayout = empty.gameObject.AddComponent<LayoutElement>();
                 emptyLayout.preferredHeight = 40f;
                 return;
@@ -104,6 +131,25 @@ namespace Mojipet.UI.Views
                 _onStarted?.Invoke();
                 Close();
             }
+        }
+
+        private void OnSearchSubmit()
+        {
+            var reading = _searchInput.text;
+            if (string.IsNullOrEmpty(reading))
+            {
+                return;
+            }
+
+            var (success, errorMessage) = _presenter.TryStartResearchByReading(_characterId, reading);
+            if (success)
+            {
+                _onStarted?.Invoke();
+                Close();
+                return;
+            }
+
+            _statusText.text = errorMessage;
         }
 
         private void Close()

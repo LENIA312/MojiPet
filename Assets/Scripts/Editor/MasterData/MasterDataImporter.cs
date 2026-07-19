@@ -28,6 +28,7 @@ namespace Mojipet.Editor.MasterData
             ImportShopMaster();
             ImportResearchMaster();
             ImportGameBalanceMaster();
+            ImportCategoryMaster();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -129,7 +130,8 @@ namespace Mojipet.Editor.MasterData
                     Description = row[2],
                     ItemType = ParseEnum<ItemType>(row[3]),
                     Price = ParseInt(row[4]),
-                    Value = ParseFloat(row[5])
+                    Value = ParseFloat(row[5]),
+                    DurationSeconds = row.Length > 6 ? ParseInt(row[6]) : 0
                 };
             }
 
@@ -227,6 +229,26 @@ namespace Mojipet.Editor.MasterData
             asset.LengthBonusMultiplier3 = ParseFloat(values["LengthBonusMultiplier3"]);
             asset.LengthBonusMultiplier4 = ParseFloat(values["LengthBonusMultiplier4"]);
             asset.LengthBonusMultiplier5Plus = ParseFloat(values["LengthBonusMultiplier5Plus"]);
+            MarkDirty(asset);
+        }
+
+        private static void ImportCategoryMaster()
+        {
+            var rows = ReadDataRows("CategoryMaster.csv");
+            var entries = new CategoryMasterEntry[rows.Count];
+
+            for (var i = 0; i < rows.Count; i++)
+            {
+                var row = rows[i];
+                entries[i] = new CategoryMasterEntry
+                {
+                    Category = ParseEnum<CategoryId>(row[0]),
+                    RequiredLibraryLevel = ParseInt(row[1])
+                };
+            }
+
+            var asset = LoadOrCreateAsset<CategoryMasterSO>("CategoryMaster");
+            asset.SetEntries(entries);
             MarkDirty(asset);
         }
 
