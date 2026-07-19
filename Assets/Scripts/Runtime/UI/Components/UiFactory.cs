@@ -50,6 +50,23 @@ namespace Mojipet.UI.Components
             rect.offsetMax = Vector2.zero;
         }
 
+        // Screen.safeArea excludes notches/Dynamic Island/status bar (top) and the
+        // home indicator (bottom). Expressed as normalized (0-1) anchor coordinates
+        // so it stays correct regardless of CanvasScaler scaling -- a pixel-based
+        // offset would need a separate scale-factor conversion and drift on
+        // resolutions other than the reference resolution.
+        public static Vector2 GetSafeAreaAnchorMin()
+        {
+            var safeArea = Screen.safeArea;
+            return new Vector2(safeArea.xMin / Screen.width, safeArea.yMin / Screen.height);
+        }
+
+        public static Vector2 GetSafeAreaAnchorMax()
+        {
+            var safeArea = Screen.safeArea;
+            return new Vector2(safeArea.xMax / Screen.width, safeArea.yMax / Screen.height);
+        }
+
         public static Image CreatePanel(Transform parent, Color color)
         {
             var go = new GameObject("Panel", typeof(RectTransform), typeof(Image));
@@ -81,6 +98,8 @@ namespace Mojipet.UI.Components
             return tmp;
         }
 
+        private const string JapaneseFontResourcePath = "NotoSansJP-Regular SDF";
+
         private static TMP_FontAsset GetJapaneseFont()
         {
             if (_japaneseFontInitialized)
@@ -90,29 +109,18 @@ namespace Mojipet.UI.Components
 
             _japaneseFontInitialized = true;
 
-            // Editor/Windows実機確認用のフォールバック。iOS/Androidリリース時はOS標準フォント名が異なるため、
-            // 埋め込み日本語フォントアセットへの差し替えが別途必要になる。
-            string[] candidates =
+            // Runtime OS font lookup (TMP_FontAsset.CreateFontAsset(familyName, ...)) is
+            // unreliable on iOS/Android -- it works in the Windows Editor but silently
+            // returns no usable font on device, causing Japanese text to render as
+            // tofu/mojibake. Use a prebaked font asset embedded in the project instead
+            // (Assets/Fonts/NotoSansJP-Regular.ttf via Tools > Generate Japanese Font
+            // Asset), which works identically on every platform.
+            _japaneseFont = Resources.Load<TMP_FontAsset>(JapaneseFontResourcePath);
+            if (_japaneseFont == null)
             {
-                "Yu Gothic UI",
-                "Yu Gothic",
-                "Meiryo UI",
-                "Meiryo",
-                "MS Gothic",
-                "Noto Sans CJK JP",
-                "Noto Sans JP",
-                "Hiragino Sans",
-                "Hiragino Kaku Gothic ProN"
-            };
-
-            foreach (var family in candidates)
-            {
-                var asset = TMP_FontAsset.CreateFontAsset(family, "Regular", 90);
-                if (asset != null)
-                {
-                    _japaneseFont = asset;
-                    break;
-                }
+                Debug.LogError(
+                    $"Japanese font asset not found at Resources/{JapaneseFontResourcePath}. " +
+                    "Run Tools > Generate Japanese Font Asset in the Unity Editor.");
             }
 
             return _japaneseFont;

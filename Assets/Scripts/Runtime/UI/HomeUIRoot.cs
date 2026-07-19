@@ -23,29 +23,43 @@ namespace Mojipet.UI
 
             HomeWorldView.Create(canvas.transform, OpenPetDetail);
 
+            // Anchored to the top of Screen.safeArea so it clears the notch/Dynamic
+            // Island/status bar instead of drawing underneath it.
+            var safeAreaMax = UiFactory.GetSafeAreaAnchorMax();
             var header = UiFactory.CreatePanel(canvas.transform, UiTheme.Surface);
             header.raycastTarget = false;
             var headerRect = (RectTransform)header.transform;
-            headerRect.anchorMin = new Vector2(0f, 1f);
-            headerRect.anchorMax = new Vector2(1f, 1f);
+            headerRect.anchorMin = new Vector2(0f, safeAreaMax.y);
+            headerRect.anchorMax = new Vector2(1f, safeAreaMax.y);
             headerRect.pivot = new Vector2(0.5f, 1f);
-            headerRect.sizeDelta = new Vector2(0f, 170f);
+            headerRect.sizeDelta = new Vector2(0f, 110f);
             headerRect.anchoredPosition = Vector2.zero;
 
             _moneyText = UiFactory.CreateText(header.transform, "言霊 0", 28, TextAlignmentOptions.Left);
             var moneyRect = (RectTransform)_moneyText.transform;
-            moneyRect.anchorMin = new Vector2(0f, 0.55f);
-            moneyRect.anchorMax = new Vector2(1f, 1f);
+            UiFactory.StretchFull(moneyRect);
             moneyRect.offsetMin = new Vector2(20f, 0f);
             moneyRect.offsetMax = new Vector2(-20f, 0f);
 
+            // Anchored to the bottom of Screen.safeArea so it clears the home
+            // indicator instead of drawing underneath it. Footer placement (rather
+            // than header) keeps navigation within thumb reach on a handheld device.
+            var safeAreaMin = UiFactory.GetSafeAreaAnchorMin();
+            var footer = UiFactory.CreatePanel(canvas.transform, UiTheme.Surface);
+            footer.raycastTarget = false;
+            var footerRect = (RectTransform)footer.transform;
+            footerRect.anchorMin = new Vector2(0f, safeAreaMin.y);
+            footerRect.anchorMax = new Vector2(1f, safeAreaMin.y);
+            footerRect.pivot = new Vector2(0.5f, 0f);
+            footerRect.sizeDelta = new Vector2(0f, 150f);
+            footerRect.anchoredPosition = Vector2.zero;
+
             var buttonRowGo = new GameObject("ButtonRow", typeof(RectTransform), typeof(UnityEngine.UI.HorizontalLayoutGroup));
-            buttonRowGo.transform.SetParent(header.transform, false);
+            buttonRowGo.transform.SetParent(footer.transform, false);
             var buttonRowRect = (RectTransform)buttonRowGo.transform;
-            buttonRowRect.anchorMin = new Vector2(0f, 0f);
-            buttonRowRect.anchorMax = new Vector2(1f, 0.5f);
-            buttonRowRect.offsetMin = new Vector2(10f, 5f);
-            buttonRowRect.offsetMax = new Vector2(-10f, -5f);
+            UiFactory.StretchFull(buttonRowRect);
+            buttonRowRect.offsetMin = new Vector2(10f, 10f);
+            buttonRowRect.offsetMax = new Vector2(-10f, -10f);
 
             var buttonRowLayout = buttonRowGo.GetComponent<UnityEngine.UI.HorizontalLayoutGroup>();
             buttonRowLayout.childForceExpandWidth = true;

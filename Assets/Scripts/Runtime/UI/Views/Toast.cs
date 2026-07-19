@@ -21,12 +21,15 @@ namespace Mojipet.UI.Views
 
         private void Initialize(string message)
         {
+            // Anchored below the top of Screen.safeArea (not the raw canvas top) so
+            // it clears the notch/Dynamic Island/status bar and the header bar.
+            var safeAreaTop = UiFactory.GetSafeAreaAnchorMax().y;
             var rect = (RectTransform)transform;
-            rect.anchorMin = new Vector2(0.5f, 1f);
-            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.anchorMin = new Vector2(0.5f, safeAreaTop);
+            rect.anchorMax = new Vector2(0.5f, safeAreaTop);
             rect.pivot = new Vector2(0.5f, 1f);
             rect.sizeDelta = new Vector2(600f, 70f);
-            rect.anchoredPosition = new Vector2(0f, -120f);
+            rect.anchoredPosition = new Vector2(0f, -20f);
 
             var panel = UiFactory.CreatePanel(rect, UiTheme.Surface);
             var panelRect = (RectTransform)panel.transform;
