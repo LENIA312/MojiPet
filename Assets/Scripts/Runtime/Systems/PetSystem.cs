@@ -276,20 +276,14 @@ namespace Mojipet.Systems
 
         // Direct, repeatable interaction (no cost, small cooldown) -- unlike Cheer
         // (money-gated, speeds up research) this is meant purely as a "the player
-        // did something and the character responded" touchpoint.
-        public bool CanStroke(int characterId)
+        // did something and the character responded" touchpoint. Triggered by
+        // tap-streak gesture on PetToken in the garden, not a menu button; the
+        // visual reaction always plays, only the exp reward is cooldown-gated.
+        private bool CanStroke(int characterId)
         {
             var pet = GetPet(characterId);
             var cooldown = TimeSpan.FromSeconds(_masterManager.GameBalanceMaster.StrokeCooldownSeconds);
             return TimeUtility.CurrentUtc >= pet.LastStrokeUtc + cooldown;
-        }
-
-        public TimeSpan GetStrokeCooldownRemaining(int characterId)
-        {
-            var pet = GetPet(characterId);
-            var cooldown = TimeSpan.FromSeconds(_masterManager.GameBalanceMaster.StrokeCooldownSeconds);
-            var remaining = pet.LastStrokeUtc + cooldown - TimeUtility.CurrentUtc;
-            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
         }
 
         public bool Stroke(int characterId)

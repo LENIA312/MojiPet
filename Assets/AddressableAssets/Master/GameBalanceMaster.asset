@@ -31,3 +31,5 @@ MonoBehaviour:
   _cheerDurationSeconds: 180
   _milestonePercentStep: 5
   _milestoneBonusPerStep: 2000
+  _strokeCooldownSeconds: 180
+  _strokeExpAmount: 5

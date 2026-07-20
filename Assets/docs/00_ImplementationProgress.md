@@ -393,3 +393,21 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 - `GameBalanceMaster`に`StrokeCooldownSeconds`(180)/`StrokeExpAmount`(5)を新設
 - `PetDetailPresenter`/`PetDetailView`に`CanStroke`/クールダウン表示/なでるボタンを追加。反応Toast表示のため`PetDetailView.Create()`にトースト層引数を追加(`InventoryView`と同じ既存パターン)
 - **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること
+
+**(このなでるボタンは直後の対応で庭の直接操作に置き換わり撤去された。下記参照。)**
+
+## GPTに相談した「体験」レベルの改善案を実装(2026-07-20)
+
+「まだ面白みに欠ける」というフィードバックを受け、プレイヤー視点の遊びの仕様書を書き出してChatGPTに相談。返ってきた18個のアイデアを技術的な実現性込みで評価し、以下の5つを選んで実装した(ドラッグ&ドロップでの給餌など、今のモーダルUI構造と相性が悪いものは保留)。
+
+**① 庭で直接なでる(ボタン廃止)**: `PetToken`から`Button`コンポーネントを撤去し、`IPointerDownHandler`/`IPointerClickHandler`を直接実装。Unityの`OnPointerClick`はドラッグ閾値を超えなかった押下+離しでしか発火しないため、庭のスクロール操作(`ScrollRect`のドラッグ)と衝突しない。押下0.45秒以上で長押し=詳細画面を開く、それ未満は「タップ」としてカウントし1.2秒以内に3回連続で「なで」(`PetSystem.Stroke`)が発動、頭上に💗が浮かんで消える。`PetDetailView`の「なでる」ボタンは撤去(重複導線の整理)。それに伴い`PetSystem.GetStrokeCooldownRemaining`(未使用化)を削除、`CanStroke`はprivateに変更、`PetDetailPresenter`/`PetDetailView`からStroke関連コードを削除、`PetDetailView.Create()`のトースト層引数も不要になり削除。
+
+**② レベルアップ演出**: `OnPetLevelUp`受信時に✨反応+0.15秒で1.3倍拡大→0.2秒で元に戻るバウンスを再生(`PetToken.PlayLevelUpEffectAsync`)。
+
+**③ 性格(徘徊速度のばらつき)**: `characterId`由来の専用乱数で0.7〜1.3倍の速度係数を算出し、待機時間・移動時間に適用。文字ごとに一貫した(セーブ跨ぎでも同じ)個体差が出る。
+
+**④ 文字が集まって単語になる**: `HomeWorldView`が`OnResearchCompleted`を購読し、完成した単語の構成文字(`WordSystem.GetCharacters`、重複除去)のうち庭にいるトークンを、現在位置の平均点へ全員でグライドさせて1.5秒静止、✨を出してから通常の徘徊に戻す(`PetToken.GatherAsync`、徘徊ループは`_isGathering`フラグで自分の移動を一時停止)。「文字がそのままキャラクター」という、このゲームでしかできない体験として最優先で実装した項目。
+
+**⑤ おかえりまとめ**: `IdleSystem`に`WordsLearnedOffline`/`LevelUpsOffline`を追加。`CalculateOfflineProgress()`内で`ResearchSystem.UpdateResearch()`実行前後だけ`OnWordUnlocked`/`OnPetLevelUp`を一時購読してカウント(他システムの挙動は変えない、純粋なオブザーバー)。放置報酬Toastが「◯時間◯分放置しました！／言霊 +◯／新しいことば +◯／レベルアップ +◯」の複数行にまとまった。これに伴い`Toast`を複数行対応に拡張(`\n`の行数に応じて高さ・表示時間が自動で伸びる、最大6秒)。
+
+**保留した案(理由付き)**: ごはんをドラッグして手渡す演出は、ショップ/持ち物のモーダルと庭が別レイヤーである今のUI構造と相性が悪くコストが高いため見送り。寝る/起きる(昼夜)、研究所へ物理的に向かう演出、推し文字/お気に入り登録、図鑑登録・マイルストーンをより派手にする演出は、良い案だが今回のスコープからは外し、次の検討候補として残した。

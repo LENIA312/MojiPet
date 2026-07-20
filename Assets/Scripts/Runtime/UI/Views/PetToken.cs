@@ -6,11 +6,12 @@ using Mojipet.Events;
 using Mojipet.UI.Components;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Mojipet.UI.Views
 {
-    public sealed class PetToken : MonoBehaviour
+    public sealed class PetToken : MonoBehaviour, IPointerDownHandler, IPointerClickHandler
     {
         private static readonly TimeSpan StatusPollInterval = TimeSpan.FromSeconds(5);
 
@@ -23,6 +24,15 @@ namespace Mojipet.UI.Views
         private const int StarBadgeLevel = 10;
         private const int CrownBadgeLevel = 50;
 
+        // Tap-vs-long-press: a quick tap pats the character in place (no menu);
+        // holding briefly opens the full detail screen. Three quick pats in a
+        // row register as an actual "stroke" (PetSystem.Stroke). This replaces
+        // routing every interaction through a menu button -- direct touch reads
+        // as "petting", a button press doesn't.
+        private const float LongPressSeconds = 0.45f;
+        private const float TapStreakWindowSeconds = 1.2f;
+        private const int StrokeTapThreshold = 3;
+
         private RectTransform _rectTransform;
         private RectTransform _worldBounds;
         private int _characterId;
@@ -33,6 +43,11 @@ namespace Mojipet.UI.Views
         private TextMeshProUGUI _statusIcon;
         private Image _researchGauge;
         private TextMeshProUGUI _growthBadge;
+
+        private float _pointerDownTime;
+        private float _lastTapTime;
+        private int _tapStreak;
+        private bool _isGathering;
 
         public static PetToken Create(
             Transform parent,
@@ -66,10 +81,6 @@ namespace Mojipet.UI.Views
             var image = gameObject.AddComponent<Image>();
             image.color = new Color(1f, 1f, 1f, 0.02f);
 
-            var button = gameObject.AddComponent<Button>();
-            button.targetGraphic = image;
-            button.onClick.AddListener(() => _onClicked?.Invoke(_characterId));
-
             RefreshVisual();
             CreateStatusIcon();
             CreateGrowthBadge();
@@ -90,6 +101,60 @@ namespace Mojipet.UI.Views
             _cts = new CancellationTokenSource();
             WanderLoopAsync(_cts.Token).Forget();
             StatusPollLoopAsync(_cts.Token).Forget();
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            _pointerDownTime = Time.unscaledTime;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            // Unity only invokes OnPointerClick for a genuine press+release that
+            // never exceeded the drag threshold, so a swipe used to pan the
+            // garden's ScrollRect never lands here -- no manual drag-vs-tap
+            // disambiguation needed.
+            var pressDuration = Time.unscaledTime - _pointerDownTime;
+            if (pressDuration >= LongPressSeconds)
+            {
+                _onClicked?.Invoke(_characterId);
+                return;
+            }
+
+            RegisterQuickTap();
+        }
+
+        private void RegisterQuickTap()
+        {
+            var now = Time.unscaledTime;
+            if (now - _lastTapTime > TapStreakWindowSeconds)
+            {
+                _tapStreak = 0;
+            }
+
+            _lastTapTime = now;
+            _tapStreak++;
+
+            if (_tapStreak >= StrokeTapThreshold)
+            {
+                _tapStreak = 0;
+                TryStroke();
+            }
+        }
+
+        private void TryStroke()
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null)
+            {
+                return;
+            }
+
+            // Always show the affectionate reaction -- the cooldown only gates
+            // the exp reward (PetSystem.Stroke), not whether petting "does"
+            // anything the player can see.
+            gameManager.PetSystem.Stroke(_characterId);
+            ShowReactionAsync("💗").Forget();
         }
 
         private void HandleHandwritingSaved(OnHandwritingSaved e)
@@ -137,6 +202,98 @@ namespace Mojipet.UI.Views
             if (e.CharacterId == _characterId)
             {
                 RefreshGrowth();
+                PlayLevelUpEffectAsync().Forget();
+            }
+        }
+
+        private async UniTaskVoid PlayLevelUpEffectAsync()
+        {
+            if (_cts == null)
+            {
+                return;
+            }
+
+            var token = _cts.Token;
+            ShowReactionAsync("✨").Forget();
+
+            var baseScale = _rectTransform.localScale;
+            var bounceScale = baseScale * 1.3f;
+
+            await AnimateScaleAsync(baseScale, bounceScale, 0.15f, token);
+            await AnimateScaleAsync(bounceScale, baseScale, 0.2f, token);
+        }
+
+        private async UniTask AnimateScaleAsync(Vector3 from, Vector3 to, float duration, CancellationToken token)
+        {
+            var elapsed = 0f;
+            const float step = 0.02f;
+
+            while (elapsed < duration)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(step), cancellationToken: token).SuppressCancellationThrow();
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                elapsed += step;
+                _rectTransform.localScale = Vector3.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+            }
+
+            _rectTransform.localScale = to;
+        }
+
+        // Short-lived emoji that pops up and fades -- used for pats, level-ups,
+        // and (from HomeWorldView) the word-completion celebration.
+        public async UniTaskVoid ShowReactionAsync(string emoji)
+        {
+            if (_cts == null)
+            {
+                return;
+            }
+
+            var token = _cts.Token;
+            var reactionGo = new GameObject("Reaction", typeof(RectTransform));
+            reactionGo.transform.SetParent(_rectTransform, false);
+            var reactionText = UiFactory.CreateText(reactionGo.transform, emoji, 36, TextAlignmentOptions.Center);
+            reactionText.raycastTarget = false;
+            var reactionRect = (RectTransform)reactionGo.transform;
+            reactionRect.anchorMin = new Vector2(0.5f, 0.5f);
+            reactionRect.anchorMax = new Vector2(0.5f, 0.5f);
+            reactionRect.pivot = new Vector2(0.5f, 0.5f);
+            reactionRect.sizeDelta = new Vector2(50f, 50f);
+            reactionRect.anchoredPosition = new Vector2(0f, 60f);
+
+            const float duration = 0.8f;
+            const float step = 0.04f;
+            var elapsed = 0f;
+            var startPos = reactionRect.anchoredPosition;
+            var endPos = startPos + new Vector2(0f, 40f);
+
+            while (elapsed < duration)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(step), cancellationToken: token).SuppressCancellationThrow();
+                if (token.IsCancellationRequested || reactionGo == null)
+                {
+                    if (reactionGo != null)
+                    {
+                        Destroy(reactionGo);
+                    }
+
+                    return;
+                }
+
+                elapsed += step;
+                var t = Mathf.Clamp01(elapsed / duration);
+                reactionRect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+                var color = reactionText.color;
+                color.a = 1f - t;
+                reactionText.color = color;
+            }
+
+            if (reactionGo != null)
+            {
+                Destroy(reactionGo);
             }
         }
 
@@ -282,9 +439,16 @@ namespace Mojipet.UI.Views
         {
             var random = new System.Random(_characterId * 7919 + 13);
 
+            // Deterministic per-character pacing (same character always has the
+            // same "personality" across sessions): 0.7x-1.3x speed, using a
+            // different seed multiplier than the position random above so the
+            // two don't correlate.
+            var personality = new System.Random(_characterId * 104729 + 17);
+            var speedFactor = 0.7f + (float)personality.NextDouble() * 0.6f;
+
             while (!token.IsCancellationRequested)
             {
-                var waitSeconds = 3f + (float)random.NextDouble() * 3f;
+                var waitSeconds = (3f + (float)random.NextDouble() * 3f) / speedFactor;
                 await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds), cancellationToken: token).SuppressCancellationThrow();
 
                 if (token.IsCancellationRequested)
@@ -292,7 +456,14 @@ namespace Mojipet.UI.Views
                     return;
                 }
 
-                await GlideToAsync(RandomPositionInBounds(), 1.5f, token);
+                if (_isGathering)
+                {
+                    // A word-completion gather is driving position externally;
+                    // don't fight it -- just wait for the next cycle.
+                    continue;
+                }
+
+                await GlideToAsync(RandomPositionInBounds(), 1.5f / speedFactor, token);
             }
         }
 
@@ -316,6 +487,35 @@ namespace Mojipet.UI.Views
             }
 
             _rectTransform.anchoredPosition = target;
+        }
+
+        public Vector2 GetPosition()
+        {
+            return _rectTransform.anchoredPosition;
+        }
+
+        // Called externally (HomeWorldView) when this character is part of a
+        // just-completed word: glide to a shared point, hold briefly, then let
+        // the normal wander loop resume. Characters visibly "becoming" a word
+        // is the one thing this game can do that a generic pet game can't.
+        public async UniTask GatherAsync(Vector2 targetPosition, float holdSeconds)
+        {
+            if (_cts == null)
+            {
+                return;
+            }
+
+            var token = _cts.Token;
+            _isGathering = true;
+            try
+            {
+                await GlideToAsync(targetPosition, 1f, token);
+                await UniTask.Delay(TimeSpan.FromSeconds(holdSeconds), cancellationToken: token).SuppressCancellationThrow();
+            }
+            finally
+            {
+                _isGathering = false;
+            }
         }
 
         private bool TryShowHandwriting(Transform parent)

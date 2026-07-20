@@ -20,6 +20,8 @@ namespace Mojipet.Systems
 
         public TimeSpan ElapsedTime { get; private set; }
         public long RewardMoney { get; private set; }
+        public int WordsLearnedOffline { get; private set; }
+        public int LevelUpsOffline { get; private set; }
 
         public IdleSystem(
             SaveSystem saveSystem,
@@ -63,6 +65,8 @@ namespace Mojipet.Systems
                 }
 
                 ElapsedTime = elapsed;
+                WordsLearnedOffline = 0;
+                LevelUpsOffline = 0;
 
                 if (elapsed <= TimeSpan.Zero)
                 {
@@ -73,7 +77,22 @@ namespace Mojipet.Systems
                 }
 
                 _petSystem.UpdateHunger(elapsed);
-                _researchSystem.UpdateResearch();
+
+                // Count what happens during the catch-up pass (word unlocks,
+                // level ups) so the "welcome back" summary can show more than
+                // just money -- purely an observer here, doesn't change what
+                // UpdateResearch() itself does.
+                _eventBus.Subscribe<OnWordUnlocked>(HandleOfflineWordUnlocked);
+                _eventBus.Subscribe<OnPetLevelUp>(HandleOfflineLevelUp);
+                try
+                {
+                    _researchSystem.UpdateResearch();
+                }
+                finally
+                {
+                    _eventBus.Unsubscribe<OnWordUnlocked>(HandleOfflineWordUnlocked);
+                    _eventBus.Unsubscribe<OnPetLevelUp>(HandleOfflineLevelUp);
+                }
 
                 RewardMoney = _petSystem.CalculateProduction(elapsed);
                 if (RewardMoney < 0)
@@ -135,6 +154,16 @@ namespace Mojipet.Systems
         public bool HasOfflineReward()
         {
             return !_rewardApplied && RewardMoney > 0;
+        }
+
+        private void HandleOfflineWordUnlocked(OnWordUnlocked e)
+        {
+            WordsLearnedOffline++;
+        }
+
+        private void HandleOfflineLevelUp(OnPetLevelUp e)
+        {
+            LevelUpsOffline++;
         }
     }
 }

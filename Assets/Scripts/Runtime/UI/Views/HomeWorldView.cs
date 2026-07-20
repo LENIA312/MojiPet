@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Mojipet.Core;
 using Mojipet.Events;
 using Mojipet.Master;
@@ -73,6 +74,7 @@ namespace Mojipet.UI.Views
             }
 
             gameManager.EventBus.Subscribe<OnPetUnlocked>(HandlePetUnlocked);
+            gameManager.EventBus.Subscribe<OnResearchCompleted>(HandleResearchCompleted);
         }
 
         private void OnDestroy()
@@ -81,12 +83,73 @@ namespace Mojipet.UI.Views
             if (gameManager != null && gameManager.EventBus != null)
             {
                 gameManager.EventBus.Unsubscribe<OnPetUnlocked>(HandlePetUnlocked);
+                gameManager.EventBus.Unsubscribe<OnResearchCompleted>(HandleResearchCompleted);
             }
         }
 
         private void HandlePetUnlocked(OnPetUnlocked e)
         {
             AddToken(e.CharacterId);
+        }
+
+        private void HandleResearchCompleted(OnResearchCompleted e)
+        {
+            GatherWordAsync(e.WordId).Forget();
+        }
+
+        // The one thing only a "letters are characters" game can do: when a
+        // word finishes, physically walk its constituent letters together in
+        // the garden for a moment before letting them wander off again.
+        private async UniTaskVoid GatherWordAsync(int wordId)
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null)
+            {
+                return;
+            }
+
+            var characterIds = gameManager.WordSystem.GetCharacters(wordId);
+            var seen = new HashSet<int>();
+            var tokens = new List<PetToken>();
+
+            foreach (var characterId in characterIds)
+            {
+                if (!seen.Add(characterId))
+                {
+                    continue; // word repeats a character (e.g. "ここ") -- don't gather the same token twice
+                }
+
+                if (_tokensByCharacterId.TryGetValue(characterId, out var token))
+                {
+                    tokens.Add(token);
+                }
+            }
+
+            if (tokens.Count < 2)
+            {
+                return; // nothing to gather: single-character word, or other members not (yet) unlocked
+            }
+
+            var gatherPoint = Vector2.zero;
+            foreach (var token in tokens)
+            {
+                gatherPoint += token.GetPosition();
+            }
+
+            gatherPoint /= tokens.Count;
+
+            var gatherTasks = new List<UniTask>(tokens.Count);
+            foreach (var token in tokens)
+            {
+                gatherTasks.Add(token.GatherAsync(gatherPoint, 1.5f));
+            }
+
+            await UniTask.WhenAll(gatherTasks);
+
+            if (tokens.Count > 0)
+            {
+                tokens[0].ShowReactionAsync("✨").Forget();
+            }
         }
 
         private void AddToken(int characterId)

@@ -122,7 +122,19 @@ namespace Mojipet.UI
 
             var hours = (int)idleSystem.ElapsedTime.TotalHours;
             var minutes = idleSystem.ElapsedTime.Minutes;
-            Toast.Show(_toastLayer, $"{hours}時間{minutes}分放置しました！ 言霊 +{idleSystem.RewardMoney:N0}");
+
+            var summary = $"{hours}時間{minutes}分放置しました！\n言霊 +{idleSystem.RewardMoney:N0}";
+            if (idleSystem.WordsLearnedOffline > 0)
+            {
+                summary += $"\n新しいことば +{idleSystem.WordsLearnedOffline}";
+            }
+
+            if (idleSystem.LevelUpsOffline > 0)
+            {
+                summary += $"\nレベルアップ +{idleSystem.LevelUpsOffline}";
+            }
+
+            Toast.Show(_toastLayer, summary);
         }
 
         private void OnDestroy()
@@ -283,7 +295,7 @@ namespace Mojipet.UI
                 gameManager.WordSystem,
                 gameManager.CurrencySystem);
 
-            PetDetailView.Create(_windowLayer, presenter, characterId, _toastLayer);
+            PetDetailView.Create(_windowLayer, presenter, characterId);
         }
     }
 }
