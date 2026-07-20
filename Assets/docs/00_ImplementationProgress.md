@@ -352,3 +352,17 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 
 - `HomeWorldView`に背景画像スロットを追加。`Assets/UI/Resources/GardenBackground.png`(Texture Type: Sprite)を置けば`Resources.Load`で自動的に庭のビューポート内・スクロール領域より手前に静的背景として敷かれる。画像はユーザー側で用意・配置する想定で、無ければ何も表示されず現状維持。`UiFactory.CreateImage`(スプライト版Image生成)を新設
 - `PetToken`の✍(研究中)アイコンの周りに、研究進捗を示す円形ゲージを追加。`UiFactory.CreateRadialProgress`(新設)は、ランタイムでコード生成したドーナツ型テクスチャ(`Sprite.Create`、外部アセット不要)を`Image.Type.Filled`+`fillMethod=Radial360`で使う。`fillAmount`は`ResearchSystem.GetProgressRate()`を反映し、既存のステータスアイコン更新(イベント即時+5秒ポーリング)に相乗り
+
+## 「面白みがない」への対応: 目標インジケーターと応援レバーを追加(2026-07-20)
+
+ユーザーから「今の作りに面白みが無い」とのフィードバック。研究の完全自動化(前述)でプレイヤーの意思決定がほぼ消えたことと、進捗の手応えの薄さが主因と分析し、対応方針として(1)低リスクな進捗の可視化、(2)単語選択を戻さない範囲での軽い意思決定、の2つを提案し合意を得た。
+
+**目標インジケーター**: ヘッダーの言霊表示の下に「目標: 図鑑{次の50語区切り}語まであと{残り}語」を常時表示(コンプリート時は専用メッセージ)。`OnResearchCompleted`のたびに再計算。新規の永続状態は無い、表示専用の軽量機能。
+
+**応援レバー(Cheer)**: `PetDetailView`に「応援する（コスト表示）」ボタンを追加。`GameBalanceMaster`に`CheerCost`(200)/`CheerMultiplier`(1.3)/`CheerDurationSeconds`(180)を新設。押すと言霊を消費して**そのキャラだけ**に研究速度バフが付く(既存の「ひらめきのしずく」はグローバルバフなのでこれとは別枠、乗算で重複可)。「単語を選ぶ」自由は戻さず、「誰に投資するか」という意思決定だけを追加する狙い。
+
+- `PetData`に`CheerMultiplier`/`CheerExpiryUtc`をキャラごとに追加(セーブデータに永続化)
+- `PetSystem`に`CurrencySystem`依存を追加(`ShopSystem`と同様、金額チェック→消費→効果適用→イベント発火を1メソッドで完結させる既存パターンを踏襲)。`Cheer(characterId)`/`IsCheerActive(characterId)`/`GetCheerRemaining(characterId)`を追加、`GetResearchSpeed()`にも乗率として組み込み
+- `OnPetCheered`イベントを追加
+- `PetDetailPresenter`に`CurrencySystem`依存を追加し、`CanAffordCheer`を公開(残高不足時はボタンを`interactable=false`、既存のShopView等と同じパターン)。`PetDetailView`は`OnMoneyChanged`を購読してボタンの押せる/押せない状態をリアルタイム反映
+- **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること

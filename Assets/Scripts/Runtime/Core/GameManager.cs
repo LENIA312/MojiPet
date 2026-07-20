@@ -62,7 +62,7 @@ namespace Mojipet.Core
 
             CurrencySystem = new CurrencySystem(SaveSystem, EventBus);
             FacilitySystem = new FacilitySystem(SaveSystem, MasterManager, CurrencySystem, EventBus);
-            PetSystem = new PetSystem(SaveSystem, MasterManager, FacilitySystem, EventBus);
+            PetSystem = new PetSystem(SaveSystem, MasterManager, FacilitySystem, CurrencySystem, EventBus);
             ItemSystem = new ItemSystem(SaveSystem, PetSystem, MasterManager, EventBus);
             ShopSystem = new ShopSystem(MasterManager, CurrencySystem, ItemSystem, EventBus);
             HandwritingSystem = new HandwritingSystem(SaveSystem, EventBus);

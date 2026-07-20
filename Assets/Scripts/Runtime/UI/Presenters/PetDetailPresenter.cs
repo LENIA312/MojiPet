@@ -18,6 +18,10 @@ namespace Mojipet.UI.Presenters
         public readonly float ResearchProgress;
         public readonly bool IsResearchBoostActive;
         public readonly System.TimeSpan ResearchBoostRemaining;
+        public readonly bool IsCheerActive;
+        public readonly System.TimeSpan CheerRemaining;
+        public readonly int CheerCost;
+        public readonly bool CanAffordCheer;
 
         public PetDetailData(
             int characterId,
@@ -31,7 +35,11 @@ namespace Mojipet.UI.Presenters
             string researchingWordDisplay,
             float researchProgress,
             bool isResearchBoostActive,
-            System.TimeSpan researchBoostRemaining)
+            System.TimeSpan researchBoostRemaining,
+            bool isCheerActive,
+            System.TimeSpan cheerRemaining,
+            int cheerCost,
+            bool canAffordCheer)
         {
             CharacterId = characterId;
             Character = character;
@@ -45,6 +53,10 @@ namespace Mojipet.UI.Presenters
             ResearchProgress = researchProgress;
             IsResearchBoostActive = isResearchBoostActive;
             ResearchBoostRemaining = researchBoostRemaining;
+            IsCheerActive = isCheerActive;
+            CheerRemaining = cheerRemaining;
+            CheerCost = cheerCost;
+            CanAffordCheer = canAffordCheer;
         }
     }
 
@@ -55,19 +67,22 @@ namespace Mojipet.UI.Presenters
         private readonly MasterManager _masterManager;
         private readonly ResearchSystem _researchSystem;
         private readonly WordSystem _wordSystem;
+        private readonly CurrencySystem _currencySystem;
 
         public PetDetailPresenter(
             PetSystem petSystem,
             ItemSystem itemSystem,
             MasterManager masterManager,
             ResearchSystem researchSystem,
-            WordSystem wordSystem)
+            WordSystem wordSystem,
+            CurrencySystem currencySystem)
         {
             _petSystem = petSystem;
             _itemSystem = itemSystem;
             _masterManager = masterManager;
             _researchSystem = researchSystem;
             _wordSystem = wordSystem;
+            _currencySystem = currencySystem;
         }
 
         public PetDetailData GetData(int characterId)
@@ -118,7 +133,11 @@ namespace Mojipet.UI.Presenters
                 researchingWordDisplay,
                 progress,
                 _petSystem.IsResearchBoostActive(),
-                _petSystem.GetResearchBoostRemaining());
+                _petSystem.GetResearchBoostRemaining(),
+                _petSystem.IsCheerActive(characterId),
+                _petSystem.GetCheerRemaining(characterId),
+                _masterManager.GameBalanceMaster.CheerCost,
+                _currencySystem.CanConsume(_masterManager.GameBalanceMaster.CheerCost));
         }
 
         public bool Feed(int characterId)
@@ -132,6 +151,11 @@ namespace Mojipet.UI.Presenters
             }
 
             return false;
+        }
+
+        public bool Cheer(int characterId)
+        {
+            return _petSystem.Cheer(characterId);
         }
     }
 }

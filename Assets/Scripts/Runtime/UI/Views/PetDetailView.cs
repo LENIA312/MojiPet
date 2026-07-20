@@ -1,7 +1,10 @@
+using Mojipet.Core;
+using Mojipet.Events;
 using Mojipet.UI.Components;
 using Mojipet.UI.Presenters;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Mojipet.UI.Views
 {
@@ -10,6 +13,8 @@ namespace Mojipet.UI.Views
         private PetDetailPresenter _presenter;
         private int _characterId;
         private TextMeshProUGUI _statusText;
+        private Button _cheerButton;
+        private TextMeshProUGUI _cheerButtonLabel;
 
         public static PetDetailView Create(Transform parent, PetDetailPresenter presenter, int characterId)
         {
@@ -26,6 +31,26 @@ namespace Mojipet.UI.Views
             _presenter = presenter;
             _characterId = characterId;
             Build();
+            Refresh();
+
+            var gameManager = GameManager.Instance;
+            if (gameManager != null)
+            {
+                gameManager.EventBus.Subscribe<OnMoneyChanged>(HandleMoneyChanged);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager != null && gameManager.EventBus != null)
+            {
+                gameManager.EventBus.Unsubscribe<OnMoneyChanged>(HandleMoneyChanged);
+            }
+        }
+
+        private void HandleMoneyChanged(OnMoneyChanged e)
+        {
             Refresh();
         }
 
@@ -58,9 +83,17 @@ namespace Mojipet.UI.Views
             var feedButton = UiFactory.CreateButton(backgroundRect, "エサをあげる", OnFeedClicked);
             var feedRect = (RectTransform)feedButton.transform;
             feedRect.anchorMin = new Vector2(0f, 0.1f);
-            feedRect.anchorMax = new Vector2(1f, 0.28f);
+            feedRect.anchorMax = new Vector2(0.48f, 0.28f);
             feedRect.offsetMin = new Vector2(10f, 0f);
-            feedRect.offsetMax = new Vector2(-10f, 0f);
+            feedRect.offsetMax = new Vector2(-5f, 0f);
+
+            _cheerButton = UiFactory.CreateButton(backgroundRect, "応援する", OnCheerClicked);
+            _cheerButtonLabel = _cheerButton.GetComponentInChildren<TextMeshProUGUI>();
+            var cheerRect = (RectTransform)_cheerButton.transform;
+            cheerRect.anchorMin = new Vector2(0.52f, 0.1f);
+            cheerRect.anchorMax = new Vector2(1f, 0.28f);
+            cheerRect.offsetMin = new Vector2(5f, 0f);
+            cheerRect.offsetMax = new Vector2(-10f, 0f);
 
             var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
             var closeRect = (RectTransform)closeButton.transform;
@@ -96,6 +129,10 @@ namespace Mojipet.UI.Views
                 ? $"研究速度アップ中（残り{(int)data.ResearchBoostRemaining.TotalMinutes}分）\n"
                 : string.Empty;
 
+            var cheerLine = data.IsCheerActive
+                ? $"応援効果中（残り{(int)data.CheerRemaining.TotalMinutes}分{(int)data.CheerRemaining.TotalSeconds % 60}秒）\n"
+                : string.Empty;
+
             _statusText.text =
                 $"{data.Character}\n" +
                 $"Lv {data.Level}\n" +
@@ -103,12 +140,22 @@ namespace Mojipet.UI.Views
                 $"満腹度 {data.Hunger:F0}\n" +
                 $"言霊生産 {data.ProductionRate}/秒\n" +
                 boostLine +
+                cheerLine +
                 $"{researchLine}";
+
+            _cheerButtonLabel.text = data.IsCheerActive ? "応援中" : $"応援する（{data.CheerCost}）";
+            _cheerButton.interactable = !data.IsCheerActive && data.CanAffordCheer;
         }
 
         private void OnFeedClicked()
         {
             _presenter.Feed(_characterId);
+            Refresh();
+        }
+
+        private void OnCheerClicked()
+        {
+            _presenter.Cheer(_characterId);
             Refresh();
         }
 

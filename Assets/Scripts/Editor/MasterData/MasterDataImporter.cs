@@ -229,6 +229,9 @@ namespace Mojipet.Editor.MasterData
             asset.LengthBonusMultiplier3 = ParseFloat(values["LengthBonusMultiplier3"]);
             asset.LengthBonusMultiplier4 = ParseFloat(values["LengthBonusMultiplier4"]);
             asset.LengthBonusMultiplier5Plus = ParseFloat(values["LengthBonusMultiplier5Plus"]);
+            asset.CheerCost = ParseInt(values["CheerCost"]);
+            asset.CheerMultiplier = ParseFloat(values["CheerMultiplier"]);
+            asset.CheerDurationSeconds = ParseInt(values["CheerDurationSeconds"]);
             MarkDirty(asset);
         }
 

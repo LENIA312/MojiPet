@@ -10,9 +10,12 @@ namespace Mojipet.UI
 {
     public sealed class HomeUIRoot : MonoBehaviour
     {
+        private const int GoalMilestoneStep = 50;
+
         private Transform _windowLayer;
         private Transform _toastLayer;
         private TextMeshProUGUI _moneyText;
+        private TextMeshProUGUI _goalText;
 
         private void Start()
         {
@@ -37,9 +40,21 @@ namespace Mojipet.UI
 
             _moneyText = UiFactory.CreateText(header.transform, "言霊 0", 28, TextAlignmentOptions.Left);
             var moneyRect = (RectTransform)_moneyText.transform;
-            UiFactory.StretchFull(moneyRect);
+            moneyRect.anchorMin = new Vector2(0f, 0.5f);
+            moneyRect.anchorMax = new Vector2(1f, 1f);
             moneyRect.offsetMin = new Vector2(20f, 0f);
             moneyRect.offsetMax = new Vector2(-20f, 0f);
+
+            // Lightweight "what am I working toward" indicator -- the loop is
+            // otherwise fully passive (research is automatic) with no visible
+            // target to aim for.
+            _goalText = UiFactory.CreateText(header.transform, string.Empty, 18, TextAlignmentOptions.Left);
+            _goalText.color = UiTheme.TextMuted;
+            var goalRect = (RectTransform)_goalText.transform;
+            goalRect.anchorMin = new Vector2(0f, 0f);
+            goalRect.anchorMax = new Vector2(1f, 0.5f);
+            goalRect.offsetMin = new Vector2(20f, 0f);
+            goalRect.offsetMax = new Vector2(-20f, 0f);
 
             // Anchored to the bottom of Screen.safeArea so it clears the home
             // indicator instead of drawing underneath it. Footer placement (rather
@@ -90,6 +105,7 @@ namespace Mojipet.UI
                 gameManager.EventBus.Subscribe<OnPetLevelUp>(HandlePetLevelUp);
                 gameManager.EventBus.Subscribe<OnPetUnlocked>(HandlePetUnlocked);
                 _moneyText.text = $"言霊 {gameManager.CurrencySystem.GetMoney():N0}";
+                RefreshGoalText(gameManager);
 
                 ShowOfflineRewardToastIfAny(gameManager);
             }
@@ -135,6 +151,27 @@ namespace Mojipet.UI
 
             var word = gameManager.WordSystem.GetWord(e.WordId);
             Toast.Show(_toastLayer, $"新しいことば！ {word.Word}");
+            RefreshGoalText(gameManager);
+        }
+
+        private void RefreshGoalText(GameManager gameManager)
+        {
+            var unlocked = gameManager.DictionarySystem.GetUnlockedCount();
+            var total = gameManager.DictionarySystem.GetTotalWordCount();
+
+            if (unlocked >= total)
+            {
+                _goalText.text = "目標: 図鑑コンプリート達成！";
+                return;
+            }
+
+            var nextMilestone = (unlocked / GoalMilestoneStep + 1) * GoalMilestoneStep;
+            if (nextMilestone > total)
+            {
+                nextMilestone = total;
+            }
+
+            _goalText.text = $"目標: 図鑑{nextMilestone}語まであと{nextMilestone - unlocked}語";
         }
 
         private void HandlePetLevelUp(OnPetLevelUp e)
@@ -236,7 +273,8 @@ namespace Mojipet.UI
                 gameManager.ItemSystem,
                 gameManager.MasterManager,
                 gameManager.ResearchSystem,
-                gameManager.WordSystem);
+                gameManager.WordSystem,
+                gameManager.CurrencySystem);
 
             PetDetailView.Create(_windowLayer, presenter, characterId);
         }

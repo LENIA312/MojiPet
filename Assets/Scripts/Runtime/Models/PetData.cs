@@ -1,3 +1,5 @@
+using System;
+
 namespace Mojipet.Models
 {
     public sealed class PetData
@@ -8,5 +10,7 @@ namespace Mojipet.Models
         public float Hunger { get; set; }
         public bool Unlocked { get; set; }
         public bool HasHandwriting { get; set; }
+        public float CheerMultiplier { get; set; } = 1f;
+        public DateTime CheerExpiryUtc { get; set; }
     }
 }

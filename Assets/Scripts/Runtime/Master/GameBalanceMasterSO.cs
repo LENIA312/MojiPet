@@ -19,6 +19,9 @@ namespace Mojipet.Master
         [SerializeField] private float _lengthBonusMultiplier3 = 1.1f;
         [SerializeField] private float _lengthBonusMultiplier4 = 1.2f;
         [SerializeField] private float _lengthBonusMultiplier5Plus = 1.3f;
+        [SerializeField] private int _cheerCost = 200;
+        [SerializeField] private float _cheerMultiplier = 1.3f;
+        [SerializeField] private int _cheerDurationSeconds = 180;
 
         public int MaxOfflineHours { get => _maxOfflineHours; set => _maxOfflineHours = value; }
         public int MaxPetLevel { get => _maxPetLevel; set => _maxPetLevel = value; }
@@ -34,5 +37,8 @@ namespace Mojipet.Master
         public float LengthBonusMultiplier3 { get => _lengthBonusMultiplier3; set => _lengthBonusMultiplier3 = value; }
         public float LengthBonusMultiplier4 { get => _lengthBonusMultiplier4; set => _lengthBonusMultiplier4 = value; }
         public float LengthBonusMultiplier5Plus { get => _lengthBonusMultiplier5Plus; set => _lengthBonusMultiplier5Plus = value; }
+        public int CheerCost { get => _cheerCost; set => _cheerCost = value; }
+        public float CheerMultiplier { get => _cheerMultiplier; set => _cheerMultiplier = value; }
+        public int CheerDurationSeconds { get => _cheerDurationSeconds; set => _cheerDurationSeconds = value; }
     }
 }

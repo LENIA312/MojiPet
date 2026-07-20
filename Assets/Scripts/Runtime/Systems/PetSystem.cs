@@ -13,6 +13,7 @@ namespace Mojipet.Systems
         private readonly SaveSystem _saveSystem;
         private readonly MasterManager _masterManager;
         private readonly FacilitySystem _facilitySystem;
+        private readonly CurrencySystem _currencySystem;
         private readonly EventBus _eventBus;
 
         private readonly Dictionary<int, PetData> _petsByCharacterId = new Dictionary<int, PetData>();
@@ -20,11 +21,17 @@ namespace Mojipet.Systems
         private readonly Dictionary<int, ExpMasterEntry> _expMasterByLevel = new Dictionary<int, ExpMasterEntry>();
         private readonly Dictionary<ItemType, ItemMasterEntry> _itemMasterByType = new Dictionary<ItemType, ItemMasterEntry>();
 
-        public PetSystem(SaveSystem saveSystem, MasterManager masterManager, FacilitySystem facilitySystem, EventBus eventBus)
+        public PetSystem(
+            SaveSystem saveSystem,
+            MasterManager masterManager,
+            FacilitySystem facilitySystem,
+            CurrencySystem currencySystem,
+            EventBus eventBus)
         {
             _saveSystem = saveSystem ?? throw new ArgumentNullException(nameof(saveSystem));
             _masterManager = masterManager ?? throw new ArgumentNullException(nameof(masterManager));
             _facilitySystem = facilitySystem ?? throw new ArgumentNullException(nameof(facilitySystem));
+            _currencySystem = currencySystem ?? throw new ArgumentNullException(nameof(currencySystem));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
 
             BuildCaches();
@@ -196,12 +203,14 @@ namespace Mojipet.Systems
             var hungerMultiplier = GetHungerMultiplier(pet.Hunger);
             var facilityMultiplier = _facilitySystem.GetEffectValue(FacilityId.ResearchLab);
             var boostMultiplier = GetResearchBoostMultiplier();
+            var cheerMultiplier = GetCheerMultiplier(pet);
 
             return petMaster.BaseResearchSpeed
                    * expEntry.ResearchSpeedMultiplier
                    * hungerMultiplier
                    * facilityMultiplier
-                   * boostMultiplier;
+                   * boostMultiplier
+                   * cheerMultiplier;
         }
 
         public void ApplyResearchBoost(float multiplier, TimeSpan duration)
@@ -225,6 +234,44 @@ namespace Mojipet.Systems
         {
             var remaining = _saveSystem.Data.ResearchBoostExpiryUtc - TimeUtility.CurrentUtc;
             return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+
+        // Per-character equivalent of ApplyResearchBoost: spend money to speed up
+        // just this one character's research, rather than the shop item's global
+        // buff. Gives the player a choice of *who* to invest in without bringing
+        // back manual word selection.
+        public bool Cheer(int characterId)
+        {
+            var pet = GetPet(characterId);
+            var balance = _masterManager.GameBalanceMaster;
+
+            if (!_currencySystem.ConsumeMoney(balance.CheerCost))
+            {
+                return false;
+            }
+
+            pet.CheerMultiplier = balance.CheerMultiplier;
+            pet.CheerExpiryUtc = TimeUtility.CurrentUtc + TimeSpan.FromSeconds(balance.CheerDurationSeconds);
+
+            _saveSystem.Save();
+            _eventBus.Publish(new OnPetCheered(characterId));
+            return true;
+        }
+
+        public bool IsCheerActive(int characterId)
+        {
+            return TimeUtility.CurrentUtc < GetPet(characterId).CheerExpiryUtc;
+        }
+
+        public TimeSpan GetCheerRemaining(int characterId)
+        {
+            var remaining = GetPet(characterId).CheerExpiryUtc - TimeUtility.CurrentUtc;
+            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+
+        private static float GetCheerMultiplier(PetData pet)
+        {
+            return TimeUtility.CurrentUtc < pet.CheerExpiryUtc ? pet.CheerMultiplier : 1f;
         }
 
         private float GetResearchBoostMultiplier()

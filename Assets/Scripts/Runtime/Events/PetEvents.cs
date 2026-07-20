@@ -61,4 +61,14 @@ namespace Mojipet.Events
             CharacterId = characterId;
         }
     }
+
+    public readonly struct OnPetCheered
+    {
+        public readonly int CharacterId;
+
+        public OnPetCheered(int characterId)
+        {
+            CharacterId = characterId;
+        }
+    }
 }
