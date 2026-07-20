@@ -366,3 +366,15 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 - `OnPetCheered`イベントを追加
 - `PetDetailPresenter`に`CurrencySystem`依存を追加し、`CanAffordCheer`を公開(残高不足時はボタンを`interactable=false`、既存のShopView等と同じパターン)。`PetDetailView`は`OnMoneyChanged`を購読してボタンの押せる/押せない状態をリアルタイム反映
 - **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること
+
+## 「育成×放置、どちらも薄い」への追加対応: 進捗マイルストーン(2026-07-20)
+
+上記の対応後もユーザーから、より根本的なフィードバック: 「もともと育成×放置ゲームの想定だったが、今はどちらの要素も少なく、何もしなければいずれクリアしてしまう。こちらから仕掛ける要素が無く、愛着も楽しみもない」。議論の結果、「図鑑を100%まで埋めたら終わり」というゴール自体は変えず(無限に続く設計にはしない)、**そこに至るまでの体感が終始単調なこと**が主因という結論になった。
+
+対応として、進捗を`GameBalanceMaster.MilestonePercentStep`(既定5%)刻みの「章」に区切り、区切りを超えるたびにボーナス言霊(`MilestoneBonusPerStep × 区切り番号`、既定2000×N)と専用Toast(「🎉 図鑑{%}%達成！」)を出すようにした。
+
+- `DictionarySystem.UnlockWord()`内で完成率を判定し、新しい区切りを超えていれば`CurrencySystem.AddMoney()`でボーナス付与+`OnMilestoneReached`発火。既受領の区切りは`SaveData.HighestMilestoneClaimed`で管理し、多重付与しない
+- `DictionarySystem`のコンストラクタに`MasterManager`/`CurrencySystem`を追加(唯一の呼び出し元`GameManager.cs`を更新)
+- `GameBalanceMaster`に`MilestonePercentStep`(5)/`MilestoneBonusPerStep`(2000)を新設
+- **未着手**(今回のスコープ外、今後の検討事項として合意): 「誰に投資するかで進み方が変わる」配分の戦略性の強化、レベルに応じた見た目の成長。ユーザーからは「マイルストーンでの区切り」を優先する方針で合意を得た
+- **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること

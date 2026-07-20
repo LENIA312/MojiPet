@@ -232,6 +232,8 @@ namespace Mojipet.Editor.MasterData
             asset.CheerCost = ParseInt(values["CheerCost"]);
             asset.CheerMultiplier = ParseFloat(values["CheerMultiplier"]);
             asset.CheerDurationSeconds = ParseInt(values["CheerDurationSeconds"]);
+            asset.MilestonePercentStep = ParseInt(values["MilestonePercentStep"]);
+            asset.MilestoneBonusPerStep = ParseInt(values["MilestoneBonusPerStep"]);
             MarkDirty(asset);
         }
 

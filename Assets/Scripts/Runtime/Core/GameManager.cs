@@ -69,7 +69,7 @@ namespace Mojipet.Core
 
             GrantInitialItemsIfNewGame();
             WordSystem = new WordSystem(MasterManager);
-            DictionarySystem = new DictionarySystem(SaveSystem, WordSystem, EventBus);
+            DictionarySystem = new DictionarySystem(SaveSystem, WordSystem, MasterManager, CurrencySystem, EventBus);
             ResearchSystem = new ResearchSystem(SaveSystem, MasterManager, WordSystem, PetSystem, DictionarySystem, FacilitySystem, EventBus);
             IdleSystem = new IdleSystem(SaveSystem, PetSystem, ResearchSystem, CurrencySystem, MasterManager, EventBus);
 

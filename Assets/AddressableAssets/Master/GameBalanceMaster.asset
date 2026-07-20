@@ -26,3 +26,6 @@ MonoBehaviour:
   _lengthBonusMultiplier3: 1.1
   _lengthBonusMultiplier4: 1.2
   _lengthBonusMultiplier5Plus: 1.3
+  _cheerCost: 200
+  _cheerMultiplier: 1.3
+  _cheerDurationSeconds: 180

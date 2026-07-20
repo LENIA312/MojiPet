@@ -104,6 +104,7 @@ namespace Mojipet.UI
                 gameManager.EventBus.Subscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Subscribe<OnPetLevelUp>(HandlePetLevelUp);
                 gameManager.EventBus.Subscribe<OnPetUnlocked>(HandlePetUnlocked);
+                gameManager.EventBus.Subscribe<OnMilestoneReached>(HandleMilestoneReached);
                 _moneyText.text = $"言霊 {gameManager.CurrencySystem.GetMoney():N0}";
                 RefreshGoalText(gameManager);
 
@@ -133,12 +134,18 @@ namespace Mojipet.UI
                 gameManager.EventBus.Unsubscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Unsubscribe<OnPetLevelUp>(HandlePetLevelUp);
                 gameManager.EventBus.Unsubscribe<OnPetUnlocked>(HandlePetUnlocked);
+                gameManager.EventBus.Unsubscribe<OnMilestoneReached>(HandleMilestoneReached);
             }
         }
 
         private void HandleMoneyChanged(OnMoneyChanged e)
         {
             _moneyText.text = $"言霊 {e.CurrentMoney:N0}";
+        }
+
+        private void HandleMilestoneReached(OnMilestoneReached e)
+        {
+            Toast.Show(_toastLayer, $"🎉 図鑑{e.PercentReached}%達成！ ボーナス 言霊+{e.BonusMoney:N0}");
         }
 
         private void HandleResearchCompleted(OnResearchCompleted e)

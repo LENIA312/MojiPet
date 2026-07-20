@@ -241,6 +241,8 @@ Difficulty 1〜100、`RequiredSeconds = 30 × Difficulty²`。**現在ResearchSy
 | CheerCost | 200 | (2026-07-20追加)「応援する」1回あたりの消費言霊 |
 | CheerMultiplier | 1.3 | (2026-07-20追加)応援中の研究速度倍率 |
 | CheerDurationSeconds | 180 | (2026-07-20追加)応援効果の継続時間(秒) |
+| MilestonePercentStep | 5 | (2026-07-20追加)図鑑進捗マイルストーンの区切り(%) |
+| MilestoneBonusPerStep | 2000 | (2026-07-20追加)マイルストーン1つあたりのボーナス言霊(区切り番号に比例して増加) |
 
 ## 3.9 CategoryMaster(2026-07-19追加)
 
@@ -409,7 +411,9 @@ GetResearchSpeed = BaseResearchSpeed(PetMaster, 固定1.0)
 
 理解済み単語(図鑑)の管理。`SaveData.Dictionary`のレコード有無=理解済みかどうか。`HashSet<int>`でO(1)判定。
 
-**API**: `UnlockWord(wordId)`(理解済みなら何もしない。新規なら`Dictionary`に追加、`OnWordUnlocked`+`OnCompletionUpdated`+`OnCategoryCompletionUpdated`を発火), `IsUnlocked(wordId)`, `GetDictionary()`, `GetUnlockedWords()`, `GetLockedWords()`, `GetCompletionRate()`(0〜1)、`GetCategoryCompletionRate(category)`、`GetUnlockedCount()`、`GetTotalWordCount()`。
+**API**: `UnlockWord(wordId)`(理解済みなら何もしない。新規なら`Dictionary`に追加、`OnWordUnlocked`+`OnCompletionUpdated`+`OnCategoryCompletionUpdated`を発火し、下記マイルストーン判定を行う), `IsUnlocked(wordId)`, `GetDictionary()`, `GetUnlockedWords()`, `GetLockedWords()`, `GetCompletionRate()`(0〜1)、`GetCategoryCompletionRate(category)`、`GetUnlockedCount()`、`GetTotalWordCount()`。
+
+**進捗マイルストーン(2026-07-20追加)**: 「図鑑を100%まで埋める」という最終ゴール自体は変えず、そこに至るまでの体感が単調という指摘への対応。`UnlockWord()`のたびに完成率(%)を`GameBalanceMaster.MilestonePercentStep`(既定5%)刻みで判定し、新しい区切りを超えるたびに`MilestoneBonusPerStep × 区切り番号`(既定2000×N)の言霊ボーナスを`CurrencySystem.AddMoney()`で付与、`OnMilestoneReached(milestoneIndex, percentReached, bonusMoney)`を発火する。既に受け取った区切りは`SaveData.HighestMilestoneClaimed`で永続管理し、二重付与しない。`HomeUIRoot`がこれを購読し「🎉 図鑑{percent}%達成！ボーナス 言霊+{bonus}」というToastを表示する。コンストラクタに`MasterManager`/`CurrencySystem`が追加された。
 
 ## 5.10 ResearchSystem
 

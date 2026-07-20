@@ -17,5 +17,6 @@ namespace Mojipet.Models
         public SettingsData Settings { get; set; } = new SettingsData();
         public DateTime ResearchBoostExpiryUtc { get; set; }
         public float ResearchBoostMultiplier { get; set; } = 1f;
+        public int HighestMilestoneClaimed { get; set; }
     }
 }

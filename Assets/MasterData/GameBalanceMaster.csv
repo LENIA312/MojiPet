@@ -16,3 +16,5 @@ LengthBonusMultiplier5Plus,1.3
 CheerCost,200
 CheerMultiplier,1.3
 CheerDurationSeconds,180
+MilestonePercentStep,5
+MilestoneBonusPerStep,2000

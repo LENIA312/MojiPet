@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Mojipet.Events;
+using Mojipet.Managers;
 using Mojipet.Master;
 using Mojipet.Models;
 using Mojipet.Utilities;
@@ -11,15 +12,24 @@ namespace Mojipet.Systems
     {
         private readonly SaveSystem _saveSystem;
         private readonly WordSystem _wordSystem;
+        private readonly MasterManager _masterManager;
+        private readonly CurrencySystem _currencySystem;
         private readonly EventBus _eventBus;
 
         private readonly HashSet<int> _unlockedWordIds = new HashSet<int>();
         private readonly Dictionary<CategoryId, int> _categoryTotalCount = new Dictionary<CategoryId, int>();
 
-        public DictionarySystem(SaveSystem saveSystem, WordSystem wordSystem, EventBus eventBus)
+        public DictionarySystem(
+            SaveSystem saveSystem,
+            WordSystem wordSystem,
+            MasterManager masterManager,
+            CurrencySystem currencySystem,
+            EventBus eventBus)
         {
             _saveSystem = saveSystem ?? throw new ArgumentNullException(nameof(saveSystem));
             _wordSystem = wordSystem ?? throw new ArgumentNullException(nameof(wordSystem));
+            _masterManager = masterManager ?? throw new ArgumentNullException(nameof(masterManager));
+            _currencySystem = currencySystem ?? throw new ArgumentNullException(nameof(currencySystem));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
 
             BuildCaches();
@@ -62,6 +72,34 @@ namespace Mojipet.Systems
             _eventBus.Publish(new OnWordUnlocked(wordId));
             _eventBus.Publish(new OnCompletionUpdated(GetCompletionRate()));
             _eventBus.Publish(new OnCategoryCompletionUpdated(word.Category, GetCategoryCompletionRate(word.Category)));
+
+            CheckMilestones();
+        }
+
+        // Breaks the long grind toward 100% completion into chapters: every
+        // MilestonePercentStep% crossed pays out a lump-sum bonus, so progress
+        // has periodic beats instead of feeling perfectly uniform throughout.
+        private void CheckMilestones()
+        {
+            var step = _masterManager.GameBalanceMaster.MilestonePercentStep;
+            if (step <= 0)
+            {
+                return;
+            }
+
+            var percent = (int)(GetCompletionRate() * 100f);
+            var currentMilestoneIndex = percent / step;
+
+            while (_saveSystem.Data.HighestMilestoneClaimed < currentMilestoneIndex)
+            {
+                var nextIndex = _saveSystem.Data.HighestMilestoneClaimed + 1;
+                var bonus = (long)_masterManager.GameBalanceMaster.MilestoneBonusPerStep * nextIndex;
+
+                _saveSystem.Data.HighestMilestoneClaimed = nextIndex;
+                _currencySystem.AddMoney(bonus);
+
+                _eventBus.Publish(new OnMilestoneReached(nextIndex, nextIndex * step, bonus));
+            }
         }
 
         public bool IsUnlocked(int wordId)
