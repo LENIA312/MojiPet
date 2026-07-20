@@ -274,6 +274,40 @@ namespace Mojipet.Systems
             return TimeUtility.CurrentUtc < pet.CheerExpiryUtc ? pet.CheerMultiplier : 1f;
         }
 
+        // Direct, repeatable interaction (no cost, small cooldown) -- unlike Cheer
+        // (money-gated, speeds up research) this is meant purely as a "the player
+        // did something and the character responded" touchpoint.
+        public bool CanStroke(int characterId)
+        {
+            var pet = GetPet(characterId);
+            var cooldown = TimeSpan.FromSeconds(_masterManager.GameBalanceMaster.StrokeCooldownSeconds);
+            return TimeUtility.CurrentUtc >= pet.LastStrokeUtc + cooldown;
+        }
+
+        public TimeSpan GetStrokeCooldownRemaining(int characterId)
+        {
+            var pet = GetPet(characterId);
+            var cooldown = TimeSpan.FromSeconds(_masterManager.GameBalanceMaster.StrokeCooldownSeconds);
+            var remaining = pet.LastStrokeUtc + cooldown - TimeUtility.CurrentUtc;
+            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+
+        public bool Stroke(int characterId)
+        {
+            if (!CanStroke(characterId))
+            {
+                return false;
+            }
+
+            var pet = GetPet(characterId);
+            pet.LastStrokeUtc = TimeUtility.CurrentUtc;
+            _saveSystem.Save();
+
+            _eventBus.Publish(new OnPetStroked(characterId));
+            AddExperience(characterId, _masterManager.GameBalanceMaster.StrokeExpAmount);
+            return true;
+        }
+
         private float GetResearchBoostMultiplier()
         {
             return IsResearchBoostActive() ? _saveSystem.Data.ResearchBoostMultiplier : 1f;

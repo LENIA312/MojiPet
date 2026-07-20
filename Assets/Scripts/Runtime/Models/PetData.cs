@@ -12,5 +12,6 @@ namespace Mojipet.Models
         public bool HasHandwriting { get; set; }
         public float CheerMultiplier { get; set; } = 1f;
         public DateTime CheerExpiryUtc { get; set; }
+        public DateTime LastStrokeUtc { get; set; }
     }
 }

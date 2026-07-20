@@ -15,21 +15,25 @@ namespace Mojipet.UI.Views
         private TextMeshProUGUI _statusText;
         private Button _cheerButton;
         private TextMeshProUGUI _cheerButtonLabel;
+        private Button _strokeButton;
+        private TextMeshProUGUI _strokeButtonLabel;
+        private Transform _toastLayer;
 
-        public static PetDetailView Create(Transform parent, PetDetailPresenter presenter, int characterId)
+        public static PetDetailView Create(Transform parent, PetDetailPresenter presenter, int characterId, Transform toastLayer)
         {
             var go = new GameObject("PetDetailWindow", typeof(RectTransform));
             go.transform.SetParent(parent, false);
 
             var view = go.AddComponent<PetDetailView>();
-            view.Initialize(presenter, characterId);
+            view.Initialize(presenter, characterId, toastLayer);
             return view;
         }
 
-        private void Initialize(PetDetailPresenter presenter, int characterId)
+        private void Initialize(PetDetailPresenter presenter, int characterId, Transform toastLayer)
         {
             _presenter = presenter;
             _characterId = characterId;
+            _toastLayer = toastLayer;
             Build();
             Refresh();
 
@@ -83,16 +87,24 @@ namespace Mojipet.UI.Views
             var feedButton = UiFactory.CreateButton(backgroundRect, "エサをあげる", OnFeedClicked);
             var feedRect = (RectTransform)feedButton.transform;
             feedRect.anchorMin = new Vector2(0f, 0.1f);
-            feedRect.anchorMax = new Vector2(0.48f, 0.28f);
+            feedRect.anchorMax = new Vector2(0.32f, 0.28f);
             feedRect.offsetMin = new Vector2(10f, 0f);
-            feedRect.offsetMax = new Vector2(-5f, 0f);
+            feedRect.offsetMax = new Vector2(-4f, 0f);
+
+            _strokeButton = UiFactory.CreateButton(backgroundRect, "なでる", OnStrokeClicked);
+            _strokeButtonLabel = _strokeButton.GetComponentInChildren<TextMeshProUGUI>();
+            var strokeRect = (RectTransform)_strokeButton.transform;
+            strokeRect.anchorMin = new Vector2(0.34f, 0.1f);
+            strokeRect.anchorMax = new Vector2(0.66f, 0.28f);
+            strokeRect.offsetMin = new Vector2(4f, 0f);
+            strokeRect.offsetMax = new Vector2(-4f, 0f);
 
             _cheerButton = UiFactory.CreateButton(backgroundRect, "応援する", OnCheerClicked);
             _cheerButtonLabel = _cheerButton.GetComponentInChildren<TextMeshProUGUI>();
             var cheerRect = (RectTransform)_cheerButton.transform;
-            cheerRect.anchorMin = new Vector2(0.52f, 0.1f);
+            cheerRect.anchorMin = new Vector2(0.68f, 0.1f);
             cheerRect.anchorMax = new Vector2(1f, 0.28f);
-            cheerRect.offsetMin = new Vector2(5f, 0f);
+            cheerRect.offsetMin = new Vector2(4f, 0f);
             cheerRect.offsetMax = new Vector2(-10f, 0f);
 
             var closeButton = UiFactory.CreateButton(backgroundRect, "閉じる", Close, ButtonStyle.Secondary);
@@ -145,7 +157,20 @@ namespace Mojipet.UI.Views
 
             _cheerButtonLabel.text = data.IsCheerActive ? "応援中" : $"応援する（{data.CheerCost}）";
             _cheerButton.interactable = !data.IsCheerActive && data.CanAffordCheer;
+
+            _strokeButtonLabel.text = data.CanStroke
+                ? "なでる"
+                : $"また今度（{(int)data.StrokeCooldownRemaining.TotalMinutes}分）";
+            _strokeButton.interactable = data.CanStroke;
         }
+
+        private static readonly string[] StrokeReactions =
+        {
+            "うれしそう！",
+            "なでなで、きもちよさそう",
+            "よろこんでいる…気がする",
+            "ふるえて反応した！"
+        };
 
         private void OnFeedClicked()
         {
@@ -156,6 +181,17 @@ namespace Mojipet.UI.Views
         private void OnCheerClicked()
         {
             _presenter.Cheer(_characterId);
+            Refresh();
+        }
+
+        private void OnStrokeClicked()
+        {
+            if (_presenter.Stroke(_characterId))
+            {
+                var reaction = StrokeReactions[Random.Range(0, StrokeReactions.Length)];
+                Toast.Show(_toastLayer, reaction);
+            }
+
             Refresh();
         }
 

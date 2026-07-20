@@ -378,3 +378,18 @@ WordMaster.csvを、サンプル38語からJMDict(EDRDG、CC BY-SA 4.0)由来の
 - `GameBalanceMaster`に`MilestonePercentStep`(5)/`MilestoneBonusPerStep`(2000)を新設
 - **未着手**(今回のスコープ外、今後の検討事項として合意): 「誰に投資するかで進み方が変わる」配分の戦略性の強化、レベルに応じた見た目の成長。ユーザーからは「マイルストーンでの区切り」を優先する方針で合意を得た
 - **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること
+
+## 「まだアクションが少ない、育ててる感がない」への対応: 見た目の成長+なでる操作(2026-07-20)
+
+マイルストーン実装後もユーザーから継続フィードバック: 「まだこちらからのアクションが少ない、育ててる感とかがない」。前回スコープ外にした2案(見た目の成長・直接ふれあう操作)を実装することで合意。
+
+**① レベルに応じた見た目の成長**: `PetToken`のスケールをLv1で1.0倍、Lv100で1.5倍まで線形に拡大(`RectTransform.localScale`、`OnPetLevelUp`購読でリアルタイム反映)。さらにLv10で⭐、Lv50で👑のバッジを頭上左に表示(頭上右は既存の研究/満腹度アイコン)。庭を眺めているだけで「育っている」ことが視覚的に分かるようにする狙い。
+
+**② なでる操作**: `PetDetailView`に「なでる」ボタンを追加。コストは無いがクールダウンあり(`GameBalanceMaster.StrokeCooldownSeconds`、既定180秒)、成功すると少量の経験値(`StrokeExpAmount`、既定5)とランダムな反応Toast(「うれしそう！」等、4パターンから抽選)。応援(Cheer、数値効果狙い)とは役割が異なり、こちらは**コスト無しで気軽に繰り返せる、触れ合うこと自体が目的の操作**として設計した。
+
+- `PetData`に`LastStrokeUtc`を追加(セーブデータに永続化)
+- `PetSystem`に`Stroke(characterId)`/`CanStroke(characterId)`/`GetStrokeCooldownRemaining(characterId)`を追加。成功時は既存の`AddExperience()`をそのまま呼ぶ(レベルアップ処理・イベント発火を再利用)
+- `OnPetStroked`イベントを追加
+- `GameBalanceMaster`に`StrokeCooldownSeconds`(180)/`StrokeExpAmount`(5)を新設
+- `PetDetailPresenter`/`PetDetailView`に`CanStroke`/クールダウン表示/なでるボタンを追加。反応Toast表示のため`PetDetailView.Create()`にトースト層引数を追加(`InventoryView`と同じ既存パターン)
+- **要作業**: Unity Editorで`Tools > Import MasterData`を実行してGameBalanceMasterの新フィールドを反映すること

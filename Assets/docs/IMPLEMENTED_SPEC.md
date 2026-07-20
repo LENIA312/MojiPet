@@ -243,6 +243,8 @@ Difficulty 1〜100、`RequiredSeconds = 30 × Difficulty²`。**現在ResearchSy
 | CheerDurationSeconds | 180 | (2026-07-20追加)応援効果の継続時間(秒) |
 | MilestonePercentStep | 5 | (2026-07-20追加)図鑑進捗マイルストーンの区切り(%) |
 | MilestoneBonusPerStep | 2000 | (2026-07-20追加)マイルストーン1つあたりのボーナス言霊(区切り番号に比例して増加) |
+| StrokeCooldownSeconds | 180 | (2026-07-20追加)「なでる」操作のクールダウン(秒) |
+| StrokeExpAmount | 5 | (2026-07-20追加)「なでる」成功時の経験値付与量 |
 
 ## 3.9 CategoryMaster(2026-07-19追加)
 
@@ -349,6 +351,8 @@ Difficulty 1〜100、`RequiredSeconds = 30 × Difficulty²`。**現在ResearchSy
 | `IsResearchBoostActive()` / `GetResearchBoostRemaining()` | グローバルバフ状態の取得 |
 | `Cheer(characterId)` | (2026-07-20追加)このキャラ**だけ**に効く研究速度バフを、`GameBalanceMaster.CheerCost`(既定200)を消費して付与。所持金不足なら消費せず`false`を返す。成功で`OnPetCheered`発火 |
 | `IsCheerActive(characterId)` / `GetCheerRemaining(characterId)` | 応援バフ状態の取得(キャラごと) |
+| `Stroke(characterId)` | (2026-07-20追加)「なでる」。クールダウン中なら`false`。成功で`StrokeExpAmount`分の経験値付与+`OnPetStroked`発火 |
+| `CanStroke(characterId)` / `GetStrokeCooldownRemaining(characterId)` | なでる操作のクールダウン状態の取得 |
 | `CalculateProduction(elapsed)` | 全員分の生産量合計(経過時間×レート) |
 | `CanLevelUp(characterId)` | bool |
 
@@ -372,6 +376,8 @@ GetResearchSpeed = BaseResearchSpeed(PetMaster, 固定1.0)
 ```
 
 **応援(Cheer)、2026-07-20追加**: `PetDetailView`の「応援する」ボタンから、`GameBalanceMaster.CheerCost`(既定200言霊)を消費して、そのキャラ**だけ**に`CheerMultiplier`(既定1.3倍)の研究速度バフを`CheerDurationSeconds`(既定180秒)だけ付与する。既存の「ひらめきのしずく」(アイテム、グローバルバフ、1.5倍・600秒)とは別枠で、両方同時に有効なら乗算で重複適用される。プレイヤーが単語を選ぶ手段を戻さずに、「誰に投資するか」という意思決定だけを追加する狙い。`PetData.CheerMultiplier`/`CheerExpiryUtc`にキャラごとに永続化。
+
+**なでる(Stroke)、2026-07-20追加**: `PetDetailView`の「なでる」ボタン。コストは無く、`GameBalanceMaster.StrokeCooldownSeconds`(既定180秒)に1回だけ実行でき、成功すると`StrokeExpAmount`(既定5)の経験値を付与し、ランダムな反応メッセージ(「うれしそう！」等、`PetDetailView.StrokeReactions`から抽選)をToast表示する。研究速度やお金など数値的な効果を持たないCheerとの違いは、**コスト無しで繰り返しできる、触れ合うこと自体が目的の操作**である点。`PetSystem.CanStroke(characterId)`/`Stroke(characterId)`/`GetStrokeCooldownRemaining(characterId)`、`PetData.LastStrokeUtc`に永続化、成功で`OnPetStroked`発火。
 
 **満腹度倍率(HungerMultiplier)**: `Hunger <= 0` → `HungerStarvingMultiplier`(0.5)、`Hunger < HungerLowThreshold(40)` → `HungerLowMultiplier`(0.8)、それ以外 → `1.0`。生産・研究速度どちらにも同じ倍率を使う(元設計書のPetSystem.mdは4段階・ResearchSystem.mdは別の数値を使っていたが、実装ではGameBalanceMasterで一本化した2段階しきい値を採用)。
 
@@ -540,6 +546,7 @@ Canvas
 ## 6.5 もじの庭(`HomeWorldView` + `PetToken`)
 
 - `HomeWorldView`: 所持済み文字ぶん`PetToken`を生成。`OnPetUnlocked`購読で新規解放時に追加生成。
+- **レベルに応じた見た目の成長(2026-07-20追加)**: `PetToken`の`RectTransform.localScale`をLv1で1.0倍〜Lv100で1.5倍まで線形に拡大(`Mathf.Lerp`)。加えてLv10以上で⭐、Lv50以上で👑のバッジを頭上左に表示(頭上右の研究/満腹度アイコンとは反対側)。`OnPetLevelUp`購読でリアルタイム反映。数字(Lv/経験値)だけでは育てている実感が薄いという指摘への対応で、庭を見ているだけで成長が分かるようにする狙い。
 - **スクロール可能な庭(2026-07-20追加)**: `HomeWorldView`自身のRectTransformは、`Screen.safeArea`基準でヘッダー(`UiTheme.HeaderHeight`)とフッター(`UiTheme.FooterHeight`)の間にきっちり収まる「ビューポート」になっており、その中に`UiFactory.CreateFreeScrollArea`(新設、`Mask`+`ScrollRect`。`CreateScrollView`と違い`LayoutGroup`を使わず子の`anchoredPosition`をそのまま尊重する)で2160×3320のスクロール可能な「庭」(`Content`)を配置する。`PetToken`はこの`Content`を親・徘徊境界の両方として使うため、キャラはヘッダー/フッターの裏には物理的に描画され得ず(Maskでクリップされる)、庭自体は画面より広いのでドラッグ/スワイプでスクロールして見て回れる。
 - `PetToken`: 1体の文字を表すTextMeshPro(手書き済みなら`HandwritingSystem`の保存画像を代わりに表示)。3〜6秒のランダム待機後、庭(スクロール領域のContent、画面そのものではない)内のランダム位置へ1.5秒かけて緩やかに移動する処理をUniTaskループで繰り返す(**MonoBehaviour.Updateは不使用**)。タップで`OpenPetDetail`コールバックが発火(`ScrollRect`との協調はUnity標準の閾値判定に任せており、タップとドラッグは自動的に区別される)。
 - **頭上ステータスアイコン**(2026-07-19追加): 右上に絵文字バッジを表示。優先度は満腹度0=🍖 > 研究中=✍ > 通常時は非表示。`OnPetFed`/`OnResearchStarted`/`OnResearchCompleted`/`OnResearchCanceled`で即時更新、満腹度の自然減少は専用イベントが無いため5秒ごとのポーリングでも更新。絵文字はNoto Sans JPに存在しないため、モノクロ版のNoto Emojiをフォールバックフォントとして設定して描画している(6.3節参照)
@@ -555,7 +562,7 @@ Canvas
 | FacilityView | FacilityPresenter | 3施設のLv・効果値・強化コストと強化ボタン。最大Lvは「強化」ボタンを非表示にしテキストのみ |
 | ShopView | ShopPresenter | 商品一覧・所持数・価格・購入ボタン(残高不足でinteractable=false) |
 | InventoryView | InventoryPresenter | 所持アイテム一覧。SeedとResearchBoostタイプのみ「使う」ボタン表示(Foodは文字詳細から使う設計) |
-| PetDetailView | PetDetailPresenter | Lv・経験値・満腹度・生産量・研究状況・研究速度バフ(グローバル+このキャラの応援)残り時間。「エサをあげる」「応援する（コスト表示、2026-07-20追加）」「描き直す」ボタン(研究は完全自動のため選択・中止ボタンは無い)。`OnMoneyChanged`購読で応援ボタンの残高不足判定をリアルタイム更新 |
+| PetDetailView | PetDetailPresenter | Lv・経験値・満腹度・生産量・研究状況・研究速度バフ(グローバル+このキャラの応援)残り時間。「エサをあげる」「なでる（クールダウン表示、2026-07-20追加）」「応援する（コスト表示）」「描き直す」ボタン(研究は完全自動のため選択・中止ボタンは無い)。`OnMoneyChanged`購読で応援ボタンの残高不足判定をリアルタイム更新。呼び出し元(`HomeUIRoot`)からトースト層を渡され、「なでる」成功時の反応メッセージ表示に使う |
 | HandwritingView | ― | 新しい文字が生まれた時に自動で開く手書きキャンバス。背景に薄いガイド文字、「消す」「できた！」ボタン |
 | SettingsView | SettingsPresenter | BGM/SE音量スライダー、画質切替(QualitySettingsに連動) |
 

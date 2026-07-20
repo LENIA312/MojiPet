@@ -283,7 +283,7 @@ namespace Mojipet.UI
                 gameManager.WordSystem,
                 gameManager.CurrencySystem);
 
-            PetDetailView.Create(_windowLayer, presenter, characterId);
+            PetDetailView.Create(_windowLayer, presenter, characterId, _toastLayer);
         }
     }
 }

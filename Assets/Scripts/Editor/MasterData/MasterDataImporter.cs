@@ -234,6 +234,8 @@ namespace Mojipet.Editor.MasterData
             asset.CheerDurationSeconds = ParseInt(values["CheerDurationSeconds"]);
             asset.MilestonePercentStep = ParseInt(values["MilestonePercentStep"]);
             asset.MilestoneBonusPerStep = ParseInt(values["MilestoneBonusPerStep"]);
+            asset.StrokeCooldownSeconds = ParseInt(values["StrokeCooldownSeconds"]);
+            asset.StrokeExpAmount = ParseInt(values["StrokeExpAmount"]);
             MarkDirty(asset);
         }
 

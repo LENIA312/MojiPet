@@ -14,6 +14,15 @@ namespace Mojipet.UI.Views
     {
         private static readonly TimeSpan StatusPollInterval = TimeSpan.FromSeconds(5);
 
+        // Level-based visual growth: a continuous, always-visible sign that this
+        // specific character has been invested in, since numbers alone (Lv/Exp)
+        // don't read as "raising" something unless you open its detail screen.
+        private const float MinScale = 1f;
+        private const float MaxScale = 1.5f;
+        private const int MaxScaleLevel = 100;
+        private const int StarBadgeLevel = 10;
+        private const int CrownBadgeLevel = 50;
+
         private RectTransform _rectTransform;
         private RectTransform _worldBounds;
         private int _characterId;
@@ -23,6 +32,7 @@ namespace Mojipet.UI.Views
         private Transform _visual;
         private TextMeshProUGUI _statusIcon;
         private Image _researchGauge;
+        private TextMeshProUGUI _growthBadge;
 
         public static PetToken Create(
             Transform parent,
@@ -62,7 +72,9 @@ namespace Mojipet.UI.Views
 
             RefreshVisual();
             CreateStatusIcon();
+            CreateGrowthBadge();
             RefreshStatusIcon();
+            RefreshGrowth();
 
             var gameManager = GameManager.Instance;
             if (gameManager != null)
@@ -72,6 +84,7 @@ namespace Mojipet.UI.Views
                 gameManager.EventBus.Subscribe<OnResearchStarted>(HandleResearchStarted);
                 gameManager.EventBus.Subscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Subscribe<OnResearchCanceled>(HandleResearchCanceled);
+                gameManager.EventBus.Subscribe<OnPetLevelUp>(HandlePetLevelUp);
             }
 
             _cts = new CancellationTokenSource();
@@ -119,6 +132,14 @@ namespace Mojipet.UI.Views
             }
         }
 
+        private void HandlePetLevelUp(OnPetLevelUp e)
+        {
+            if (e.CharacterId == _characterId)
+            {
+                RefreshGrowth();
+            }
+        }
+
         private async UniTaskVoid StatusPollLoopAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -157,6 +178,47 @@ namespace Mojipet.UI.Views
             iconRect.pivot = new Vector2(0.5f, 0.5f);
             iconRect.sizeDelta = new Vector2(44f, 44f);
             iconRect.anchoredPosition = new Vector2(-6f, -6f);
+        }
+
+        private void CreateGrowthBadge()
+        {
+            // Opposite corner from the research/hunger status icon.
+            _growthBadge = UiFactory.CreateText(_rectTransform, string.Empty, 28, TextAlignmentOptions.Center);
+            _growthBadge.raycastTarget = false;
+            var badgeRect = (RectTransform)_growthBadge.transform;
+            badgeRect.anchorMin = new Vector2(0f, 1f);
+            badgeRect.anchorMax = new Vector2(0f, 1f);
+            badgeRect.pivot = new Vector2(0.5f, 0.5f);
+            badgeRect.sizeDelta = new Vector2(40f, 40f);
+            badgeRect.anchoredPosition = new Vector2(6f, -6f);
+        }
+
+        private void RefreshGrowth()
+        {
+            var gameManager = GameManager.Instance;
+            if (gameManager == null || !gameManager.PetSystem.IsUnlocked(_characterId))
+            {
+                return;
+            }
+
+            var level = gameManager.PetSystem.GetPet(_characterId).Level;
+
+            var t = Mathf.Clamp01((level - 1) / (float)(MaxScaleLevel - 1));
+            var scale = Mathf.Lerp(MinScale, MaxScale, t);
+            _rectTransform.localScale = new Vector3(scale, scale, 1f);
+
+            if (level >= CrownBadgeLevel)
+            {
+                _growthBadge.text = "👑";
+            }
+            else if (level >= StarBadgeLevel)
+            {
+                _growthBadge.text = "⭐";
+            }
+            else
+            {
+                _growthBadge.text = string.Empty;
+            }
         }
 
         private void RefreshStatusIcon()
@@ -308,6 +370,7 @@ namespace Mojipet.UI.Views
                 gameManager.EventBus.Unsubscribe<OnResearchStarted>(HandleResearchStarted);
                 gameManager.EventBus.Unsubscribe<OnResearchCompleted>(HandleResearchCompleted);
                 gameManager.EventBus.Unsubscribe<OnResearchCanceled>(HandleResearchCanceled);
+                gameManager.EventBus.Unsubscribe<OnPetLevelUp>(HandlePetLevelUp);
             }
         }
     }

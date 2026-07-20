@@ -18,3 +18,5 @@ CheerMultiplier,1.3
 CheerDurationSeconds,180
 MilestonePercentStep,5
 MilestoneBonusPerStep,2000
+StrokeCooldownSeconds,180
+StrokeExpAmount,5

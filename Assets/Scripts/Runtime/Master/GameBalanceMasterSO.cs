@@ -24,6 +24,8 @@ namespace Mojipet.Master
         [SerializeField] private int _cheerDurationSeconds = 180;
         [SerializeField] private int _milestonePercentStep = 5;
         [SerializeField] private int _milestoneBonusPerStep = 2000;
+        [SerializeField] private int _strokeCooldownSeconds = 180;
+        [SerializeField] private int _strokeExpAmount = 5;
 
         public int MaxOfflineHours { get => _maxOfflineHours; set => _maxOfflineHours = value; }
         public int MaxPetLevel { get => _maxPetLevel; set => _maxPetLevel = value; }
@@ -44,5 +46,7 @@ namespace Mojipet.Master
         public int CheerDurationSeconds { get => _cheerDurationSeconds; set => _cheerDurationSeconds = value; }
         public int MilestonePercentStep { get => _milestonePercentStep; set => _milestonePercentStep = value; }
         public int MilestoneBonusPerStep { get => _milestoneBonusPerStep; set => _milestoneBonusPerStep = value; }
+        public int StrokeCooldownSeconds { get => _strokeCooldownSeconds; set => _strokeCooldownSeconds = value; }
+        public int StrokeExpAmount { get => _strokeExpAmount; set => _strokeExpAmount = value; }
     }
 }

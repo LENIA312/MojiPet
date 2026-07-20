@@ -29,3 +29,5 @@ MonoBehaviour:
   _cheerCost: 200
   _cheerMultiplier: 1.3
   _cheerDurationSeconds: 180
+  _milestonePercentStep: 5
+  _milestoneBonusPerStep: 2000

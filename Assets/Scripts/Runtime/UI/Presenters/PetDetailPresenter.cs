@@ -22,6 +22,8 @@ namespace Mojipet.UI.Presenters
         public readonly System.TimeSpan CheerRemaining;
         public readonly int CheerCost;
         public readonly bool CanAffordCheer;
+        public readonly bool CanStroke;
+        public readonly System.TimeSpan StrokeCooldownRemaining;
 
         public PetDetailData(
             int characterId,
@@ -39,7 +41,9 @@ namespace Mojipet.UI.Presenters
             bool isCheerActive,
             System.TimeSpan cheerRemaining,
             int cheerCost,
-            bool canAffordCheer)
+            bool canAffordCheer,
+            bool canStroke,
+            System.TimeSpan strokeCooldownRemaining)
         {
             CharacterId = characterId;
             Character = character;
@@ -57,6 +61,8 @@ namespace Mojipet.UI.Presenters
             CheerRemaining = cheerRemaining;
             CheerCost = cheerCost;
             CanAffordCheer = canAffordCheer;
+            CanStroke = canStroke;
+            StrokeCooldownRemaining = strokeCooldownRemaining;
         }
     }
 
@@ -137,7 +143,9 @@ namespace Mojipet.UI.Presenters
                 _petSystem.IsCheerActive(characterId),
                 _petSystem.GetCheerRemaining(characterId),
                 _masterManager.GameBalanceMaster.CheerCost,
-                _currencySystem.CanConsume(_masterManager.GameBalanceMaster.CheerCost));
+                _currencySystem.CanConsume(_masterManager.GameBalanceMaster.CheerCost),
+                _petSystem.CanStroke(characterId),
+                _petSystem.GetStrokeCooldownRemaining(characterId));
         }
 
         public bool Feed(int characterId)
@@ -156,6 +164,11 @@ namespace Mojipet.UI.Presenters
         public bool Cheer(int characterId)
         {
             return _petSystem.Cheer(characterId);
+        }
+
+        public bool Stroke(int characterId)
+        {
+            return _petSystem.Stroke(characterId);
         }
     }
 }
